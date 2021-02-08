@@ -1,5 +1,5 @@
 VERSION := $(shell git describe --tags)
-API_VERSION := "1.0.2"
+API_VERSION := "1.0.0"
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECTNAME := $(shell basename "$(PWD)")
 
