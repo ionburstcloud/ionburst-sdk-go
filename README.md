@@ -12,9 +12,7 @@ The **Ionburst SDK for Go** enables Golang developers to easily work with [Ionbu
 ### Installation
 
 ```sh
-
 $ go get gitlab.com/ionburst/ionburst-sdk-go
-
 ```
 
 ### Configuration
