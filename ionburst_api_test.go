@@ -60,6 +60,14 @@ func TestPostData(t *testing.T) {
 
 	fmt.Printf("Uploaded: %s\n", name)
 
+	_, err = cli.Download(name)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	fmt.Printf("Downloaded: %s\n", name)
+
 	err = cli.Delete(name)
 	if err != nil {
 		t.Error(err)
