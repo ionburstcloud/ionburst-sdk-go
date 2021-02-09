@@ -31,7 +31,7 @@ func TestClassifications(t *testing.T) {
 		return
 	}
 
-	a, err := cli.Classifications()
+	a, err := cli.getClassifications()
 	if err != nil {
 		t.Error(err)
 		return
@@ -52,7 +52,7 @@ func TestPostData(t *testing.T) {
 
 	r := bytes.NewReader(ba)
 
-	err = cli.Upload(name, r, "")
+	err = cli.put(name, r, "")
 	if err != nil {
 		t.Error(err)
 		return
@@ -60,7 +60,7 @@ func TestPostData(t *testing.T) {
 
 	fmt.Printf("Uploaded: %s\n", name)
 
-	_, err = cli.Download(name)
+	_, err = cli.get(name)
 	if err != nil {
 		t.Error(err)
 		return
@@ -68,7 +68,7 @@ func TestPostData(t *testing.T) {
 
 	fmt.Printf("Downloaded: %s\n", name)
 
-	err = cli.Delete(name)
+	err = cli.delete(name)
 	if err != nil {
 		t.Error(err)
 		return

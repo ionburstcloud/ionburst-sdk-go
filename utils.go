@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	"gitlab.com/ionburst/ionburst-sdk-go/models"
 	"io"
 	"os"
+
+	"github.com/go-resty/resty/v2"
+	"gitlab.com/ionburst/ionburst-sdk-go/models"
 )
 
 func FileExists(filename string) bool {
@@ -32,7 +33,7 @@ func (cli *Client) makeClientFromCreds() (string, *resty.Request, error) {
 	}
 
 	if cli.auth == nil {
-		cli.auth, err = cli.doSignin(creds.IonburstUri, creds.IonburstID, creds.IonburstKey, "")
+		cli.auth, err = cli.doSignin(creds.IonburstURI, creds.IonburstID, creds.IonburstKey, "")
 		if err != nil {
 			return "", nil, err
 		}
@@ -46,7 +47,7 @@ func (cli *Client) makeClientFromCreds() (string, *resty.Request, error) {
 
 	r := client.R().SetHeader("Authorization", "Bearer "+cli.auth.IdToken)
 
-	return creds.IonburstUri, r, nil
+	return creds.IonburstURI, r, nil
 
 }
 
@@ -96,7 +97,7 @@ func (cli *Client) checkResponse(res *resty.Response) (bool, error) {
 			}
 			cli.logger.Debug("Signing in to Ionburst using profile", cli.ionConfig.DefaultProfile)
 
-			cli.auth, err = cli.doSignin(creds.IonburstUri, creds.IonburstID, creds.IonburstKey, rtoken)
+			cli.auth, err = cli.doSignin(creds.IonburstURI, creds.IonburstID, creds.IonburstKey, rtoken)
 			if err != nil {
 				return false, err
 			}

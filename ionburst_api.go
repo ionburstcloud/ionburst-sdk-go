@@ -2,14 +2,15 @@ package ionburst
 
 import (
 	"encoding/json"
-	"gitlab.com/ionburst/ionburst-sdk-go/models"
 	"io"
 	"os"
+
+	"gitlab.com/ionburst/ionburst-sdk-go/models"
 )
 
 type DeferredToken string
 
-func (cli *Client) Classifications() ([]string, error) {
+func (cli *Client) getClassifications() ([]string, error) {
 	cli.logger.Debug("Getting Classifications")
 	if res, err := cli.doGet("api/classification", nil); err != nil {
 		return nil, err
@@ -23,7 +24,7 @@ func (cli *Client) Classifications() ([]string, error) {
 	}
 }
 
-func (cli *Client) Upload(id string, reader io.Reader, classification string) error {
+func (cli *Client) put(id string, reader io.Reader, classification string) error {
 	cli.logger.Debug("Uploading Ionburst object", id)
 	_, err := cli.doPostBinary("api/data/"+id, reader, classification)
 	if err == nil {
@@ -32,7 +33,7 @@ func (cli *Client) Upload(id string, reader io.Reader, classification string) er
 	return err
 }
 
-func (cli *Client) UploadFromFile(id string, file string, classification string) error {
+func (cli *Client) putFromFile(id string, file string, classification string) error {
 	cli.logger.Debug("Uploading Ionburst object", id, "from file", file)
 	rdr, err := os.Open(file)
 	if err != nil {
@@ -45,17 +46,17 @@ func (cli *Client) UploadFromFile(id string, file string, classification string)
 	return err
 }
 
-func (cli *Client) Download(id string) (io.Reader, error) {
+func (cli *Client) get(id string) (io.Reader, error) {
 	cli.logger.Debug("Downloading Ionburst object", id)
 	return cli.doGetBinary("api/data/"+id, nil)
 }
 
-func (cli *Client) DownloadWithLen(id string) (io.Reader, int64, error) {
+func (cli *Client) getWithLen(id string) (io.Reader, int64, error) {
 	cli.logger.Debug("Downloading Ionburst object", id)
 	return cli.doGetBinaryLen("api/data/"+id, nil)
 }
 
-func (cli *Client) DownloadToFile(id string, file string) error {
+func (cli *Client) getToFile(id string, file string) error {
 	cli.logger.Debug("Downloading Ionburst object", id, "to file", file)
 	rdr, err := cli.doGetBinary("api/data/"+id, nil)
 	if err != nil {
@@ -70,14 +71,14 @@ func (cli *Client) DownloadToFile(id string, file string) error {
 	return err
 }
 
-func (cli *Client) Delete(id string) error {
+func (cli *Client) delete(id string) error {
 	cli.logger.Debug("Starting Deletion of Ionburst object", id)
 	_, err := cli.doDelete("api/data/"+id, nil)
 	cli.logger.Debug("Deletion of Ionburst object", id, "complete")
 	return err
 }
 
-func (cli *Client) UploadDeferred(id string, reader io.Reader, classification string) (DeferredToken, error) {
+func (cli *Client) putDeferred(id string, reader io.Reader, classification string) (DeferredToken, error) {
 	cli.logger.Debug("Uploading Ionburst object deferred for: ", id)
 	tk, err := cli.doPostBinaryDeferred("api/data/deferred/start/"+id, reader, classification)
 	if err == nil {
@@ -88,7 +89,7 @@ func (cli *Client) UploadDeferred(id string, reader io.Reader, classification st
 	return DeferredToken(tk), nil
 }
 
-func (cli *Client) DownloadDeferred(id string) (DeferredToken, error) {
+func (cli *Client) getDeferred(id string) (DeferredToken, error) {
 	cli.logger.Debug("Downloading Ionburst object deferred for: ", id)
 	tk, err := cli.doGet("api/data/deferred/start/"+id, nil)
 	if err == nil {
@@ -105,7 +106,7 @@ func (cli *Client) DownloadDeferred(id string) (DeferredToken, error) {
 	}
 }
 
-func (cli *Client) GetDeferredStatus(token DeferredToken) (*models.WorkflowResult, error) {
+func (cli *Client) checkDeferred(token DeferredToken) (*models.WorkflowResult, error) {
 	res, err := cli.doGet("api/data/deferred/check/"+string(token), nil)
 	if err != nil {
 		return nil, err
@@ -118,7 +119,7 @@ func (cli *Client) GetDeferredStatus(token DeferredToken) (*models.WorkflowResul
 	return &wr, nil
 }
 
-func (cli *Client) FetchDeferred(token DeferredToken) (io.Reader, error) {
+func (cli *Client) fetchDeferred(token DeferredToken) (io.Reader, error) {
 	cli.logger.Debug("Downloading Deferred Ionburst object with token", token)
 	return cli.doGetBinary("api/data/deferred/fetch/"+string(token), nil)
 }

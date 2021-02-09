@@ -2,6 +2,7 @@ package ionburst
 
 import (
 	"errors"
+
 	"github.com/gobuffalo/envy"
 	"gitlab.com/ionburst/ionburst-sdk-go/models"
 	"go.uber.org/zap"
@@ -147,6 +148,6 @@ func (cli *Client) initAuth() (*Client, error) {
 func (cli *Client) loadEnvironmentVariables() {
 	ionburstID := envy.Get("IONBURST_ID", "")
 	ionburstKey := envy.Get("IONBURST_KEY", "")
-	ionburstUri := envy.Get("IONBURST_URI", "")
-	cli.ionConfig.UpsertCredsProfile(cli.ionConfig.DefaultProfile, ionburstUri, ionburstID, ionburstKey)
+	ionburstURI := envy.Get("IONBURST_URI", "")
+	cli.ionConfig.UpsertCredsProfile(cli.ionConfig.DefaultProfile, ionburstURI, ionburstID, ionburstKey)
 }

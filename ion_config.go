@@ -3,15 +3,16 @@ package ionburst
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gobuffalo/envy"
-	"gopkg.in/ini.v1"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/gobuffalo/envy"
+	"gopkg.in/ini.v1"
 )
 
-const DEFAULT_IONBURST_CONFIG_PATH = ".ionburst/credentials"
-const DEFAULT_IONBURST_CREDENTIALS_PROFILE_NAME = "default"
+const defaultIonburstConfigPath = ".ionburst/credentials"
+const defaultIonburstCredentialsProfileName = "default"
 
 func GetDefaultIonburstConfigPath() string {
 	cwd := envy.Get("HOME", "./")
@@ -20,7 +21,7 @@ func GetDefaultIonburstConfigPath() string {
 		cwd, _ = os.Getwd()
 	}
 
-	configPath := filepath.Join(cwd, DEFAULT_IONBURST_CONFIG_PATH)
+	configPath := filepath.Join(cwd, defaultIonburstConfigPath)
 	return configPath
 }
 
@@ -32,13 +33,13 @@ func NewEmptyIonConfig(cli *Client) *IonConfig {
 		cwd, _ = os.Getwd()
 	}
 
-	configPath := filepath.Join(cwd, DEFAULT_IONBURST_CONFIG_PATH)
+	configPath := filepath.Join(cwd, defaultIonburstConfigPath)
 
 	config := &IonConfig{
 		cli:            cli,
 		isNew:          true,
 		file:           configPath,
-		DefaultProfile: DEFAULT_IONBURST_CREDENTIALS_PROFILE_NAME,
+		DefaultProfile: defaultIonburstCredentialsProfileName,
 		Profiles:       map[string]*CredentialsProfile{},
 	}
 
@@ -54,7 +55,7 @@ func NewIonConfig(cli *Client, uri string, ionburstID string, ionburstKey string
 		cwd, _ = os.Getwd()
 	}
 
-	configPath := filepath.Join(cwd, DEFAULT_IONBURST_CONFIG_PATH)
+	configPath := filepath.Join(cwd, defaultIonburstConfigPath)
 
 	return NewIonConfigWithFilePaths(cli, uri, ionburstID, ionburstKey, configPath)
 
@@ -66,11 +67,11 @@ func NewIonConfigWithFilePaths(cli *Client, uri string, ionburstID string, ionbu
 		cli:            cli,
 		isNew:          true,
 		file:           configFile,
-		DefaultProfile: DEFAULT_IONBURST_CREDENTIALS_PROFILE_NAME,
+		DefaultProfile: defaultIonburstCredentialsProfileName,
 		Profiles:       map[string]*CredentialsProfile{},
 	}
 
-	config.UpsertCredsProfile(DEFAULT_IONBURST_CREDENTIALS_PROFILE_NAME, uri, ionburstID, ionburstKey)
+	config.UpsertCredsProfile(defaultIonburstCredentialsProfileName, uri, ionburstID, ionburstKey)
 
 	return config.init()
 
@@ -119,7 +120,7 @@ func (conf *IonConfig) init() *IonConfig {
 func (conf *IonConfig) GetDefaultCredsProfile() (*CredentialsProfile, error) {
 	profName := conf.DefaultProfile
 	if profName == "" {
-		profName = DEFAULT_IONBURST_CREDENTIALS_PROFILE_NAME
+		profName = defaultIonburstCredentialsProfileName
 	}
 	return conf.GetCredsProfile(profName)
 }
@@ -145,7 +146,7 @@ func (conf *IonConfig) SaveConfigToFile(file string) error {
 
 func (conf *IonConfig) LoadIniCreds() error {
 
-	//using the path for current config file - look and see if the ini is there a "credentials" file that is a sibling of config.json
+	//using the path for current config file - look and see if the ini is there a "credentials" file
 
 	opath := filepath.Dir(conf.file)
 	credsPath := filepath.Join(opath, "credentials")
@@ -185,7 +186,7 @@ func (conf *IonConfig) UpsertCredsProfile(name string, uri string, ionburstID st
 		conf.Profiles[name] = NewCredentialsProfile(uri, ionburstID, ionburstKey)
 	} else {
 		if uri != "" {
-			conf.Profiles[name].IonburstUri = uri
+			conf.Profiles[name].IonburstURI = uri
 		}
 		if ionburstID != "" {
 			conf.Profiles[name].IonburstID = ionburstID
@@ -213,12 +214,12 @@ func NewCredentialsProfile(uri string, ionburstID string, ionburstKey string) *C
 	return &CredentialsProfile{
 		IonburstID:  ionburstID,
 		IonburstKey: ionburstKey,
-		IonburstUri: uri,
+		IonburstURI: uri,
 	}
 }
 
 type CredentialsProfile struct {
-	IonburstUri string `json:"URI"`
+	IonburstURI string `json:"URI"`
 	IonburstID  string `json:"ID"`
 	IonburstKey string `json:"KEY"`
 }
