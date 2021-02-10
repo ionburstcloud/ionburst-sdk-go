@@ -75,35 +75,35 @@ func main() {
 //get a readable stream
 ioReader, _ := os.Open(FilePath)
 
-client.Upload(FileID, ioReader, classification)
+client.put(FileID, ioReader, classification)
 //if classification is an empty string ("") it wont be passed
 
 //Upload from a filepath instead
-client.UploadFromFile(FileID, FilePath, classification)
+client.putFromFile(FileID, FilePath, classification)
 ```
 
 #### Download Data
 
 ```go
-ioReader, err := client.Download(FileID)
+ioReader, err := client.get(FileID)
 
 //Download to a filepath instead
-err := client.DownloadToFile(FileID, OutputFilePath)
+err := client.getToFile(FileID, OutputFilePath)
 
 //Download and output the size of the downloaded content
-ioReader, sizeOfContent, err := client.DownloadWithLen(FileID)
+ioReader, sizeOfContent, err := client.getWithLen(FileID)
 ```
 
 #### Delete Data
 
 ```go
-err := client.Delete(FileID)
+err := client.delete(FileID)
 ```
 
 #### Get Classifcations
 
 ```go
-classifications, _ := client.Classifications()
+classifications, _ := client.getClassifications()
 ```
 
 ### Usage in Deferred Mode
@@ -111,7 +111,7 @@ classifications, _ := client.Classifications()
 #### Upload Data Deferred
 
 ```go
-token, err := cli.UploadDeferred(name, r, "")
+token, err := cli.putDeferred(name, r, "")
 if err != nil {
     t.Error(err)
     return
@@ -121,7 +121,7 @@ if err != nil {
 #### Download Data Deferred
 
 ```go
-token, err := cli.DownloadDeferred(name)
+token, err := cli.getDeferred(name)
 if err != nil {
     t.Error(err)
     return
@@ -131,7 +131,7 @@ if err != nil {
 #### Check Data Deferred
 
 ```go
-res, err = cli.GetDeferredStatus(tk)
+res, err = cli.checkDeferred(tk)
 if err != nil {
     t.Error(err)
     return
@@ -146,7 +146,7 @@ if err != nil {
 #### Fetch Data Deferred
 
 ```go
-ioReader, err := cli.FetchDeferred(tk)
+ioReader, err := cli.fetchDeferred(tk)
 if err != nil {
     t.Error(err)
     return
@@ -173,7 +173,7 @@ The change log for the SDK can be found in the Gitlab Releases [page](https://gi
 
 ## Contributors
 
-[Craig Smith](https://github.com/spuddleziz)
+A massive thanks to [Craig Smith](https://github.com/spuddleziz) for developing this SDK.
 
 ## Dependencies
 
