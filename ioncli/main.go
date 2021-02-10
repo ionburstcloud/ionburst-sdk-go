@@ -3,12 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/urfave/cli/v2"
-	"gitlab.com/ionburst/ionburst-sdk-go"
-	"gitlab.com/ionburst/ionburst-sdk-go/ioprogress"
 	"io"
 	"log"
 	"os"
+
+	"github.com/urfave/cli/v2"
+	"gitlab.com/ionburst/ionburst-sdk-go"
+	"gitlab.com/ionburst/ionburst-sdk-go/ioprogress"
 )
 
 var debug bool
@@ -72,7 +73,7 @@ VERSION:
 				Aliases: []string{
 					"p",
 				},
-				Value:       ionburst.DEFAULT_IONBURST_CREDENTIALS_PROFILE_NAME,
+				Value:       ionburst.defaultIonburstCredentialsProfileName,
 				Usage:       "The credentials profile to use",
 				Destination: &profile,
 			},
@@ -109,7 +110,7 @@ VERSION:
 						return err
 					}
 
-					rdr, len, err := cli.DownloadWithLen(id)
+					rdr, len, err := cli.getWithLen(id)
 					if err != nil {
 						return err
 					}
@@ -175,7 +176,7 @@ VERSION:
 						return err
 					}
 
-					err = cli.Upload(id, progressR, c.String("classification"))
+					err = cli.put(id, progressR, c.String("classification"))
 					return err
 				},
 			},
@@ -194,7 +195,7 @@ VERSION:
 						return err
 					}
 
-					err = cli.Delete(id)
+					err = cli.delete(id)
 					if err != nil {
 						return err
 					}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/urfave/cli/v2"
 	"gitlab.com/ionburst/ionburst-sdk-go"
 )
@@ -27,7 +28,7 @@ var ClassificationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				cls, err := cli.Classifications()
+				cls, err := cli.getClassifications()
 				if err != nil {
 					return err
 				}
