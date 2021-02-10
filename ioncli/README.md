@@ -34,7 +34,7 @@ GLOBAL OPTIONS:
    --version    Show Version Information (default: false)
    
 COPYRIGHT:
-   (C) Ionburst Limited UK
+   (C) Ionburst Limited
    
 VERSION:
    V0.0.1 [ Build: a2e2f0b | API: 1.0.0 ]
