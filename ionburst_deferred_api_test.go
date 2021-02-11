@@ -14,7 +14,7 @@ func TestDeferredUpload(t *testing.T) {
 		return
 	}
 
-	a, err := cli.getClassifications()
+	a, err := cli.GetClassifications()
 	if err != nil {
 		t.Error(err)
 		return
@@ -28,7 +28,7 @@ func TestDeferredUpload(t *testing.T) {
 
 	r := bytes.NewReader(ba)
 
-	tk, err := cli.putDeferred(name, r, "")
+	tk, err := cli.PutDeferred(name, r, "")
 	if err != nil {
 		t.Error(err)
 		return
@@ -38,7 +38,7 @@ func TestDeferredUpload(t *testing.T) {
 
 	fmt.Printf("Uploaded Deferred: %s (%s)\n", name, tk)
 
-	res, err := cli.checkDeferred(tk)
+	res, err := cli.CheckDeferred(tk)
 	if err != nil {
 		t.Error(err)
 		return
@@ -50,7 +50,7 @@ func TestDeferredUpload(t *testing.T) {
 	} else {
 		fmt.Printf("Uploaded Deferred Success: %s\n", res.ActivityToken)
 
-		tk, err := cli.getDeferred(name)
+		tk, err := cli.GetDeferred(name)
 		if err != nil {
 			t.Error(err)
 			return
@@ -60,7 +60,7 @@ func TestDeferredUpload(t *testing.T) {
 
 		fmt.Printf("Download Deferred: %s (%s)\n", name, tk)
 
-		res, err = cli.checkDeferred(tk)
+		res, err = cli.CheckDeferred(tk)
 		if err != nil {
 			t.Error(err)
 			return
@@ -68,13 +68,13 @@ func TestDeferredUpload(t *testing.T) {
 			t.Error(fmt.Sprintf("ERR: %s - %d", res.Message, res.Status))
 			return
 		} else {
-			_, err := cli.fetchDeferred(tk)
+			_, err := cli.FetchDeferred(tk)
 			if err != nil {
 				t.Error(err)
 				return
 			}
 
-			err = cli.delete(name)
+			err = cli.Delete(name)
 			if err != nil {
 				t.Error(err)
 				return
