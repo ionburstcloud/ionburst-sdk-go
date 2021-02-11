@@ -110,7 +110,7 @@ VERSION:
 						return err
 					}
 
-					rdr, len, err := cli.getWithLen(id)
+					rdr, len, err := cli.GetWithLen(id)
 					if err != nil {
 						return err
 					}
@@ -176,7 +176,7 @@ VERSION:
 						return err
 					}
 
-					err = cli.put(id, progressR, c.String("classification"))
+					err = cli.Put(id, progressR, c.String("classification"))
 					return err
 				},
 			},
@@ -195,7 +195,7 @@ VERSION:
 						return err
 					}
 
-					err = cli.delete(id)
+					err = cli.Delete(id)
 					if err != nil {
 						return err
 					}

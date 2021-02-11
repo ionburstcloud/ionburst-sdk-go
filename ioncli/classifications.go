@@ -28,7 +28,7 @@ var ClassificationsCmd = &cli.Command{
 				if err != nil {
 					return err
 				}
-				cls, err := cli.getClassifications()
+				cls, err := cli.GetClassifications()
 				if err != nil {
 					return err
 				}
