@@ -73,7 +73,7 @@ VERSION:
 				Aliases: []string{
 					"p",
 				},
-				Value:       ionburst.defaultIonburstCredentialsProfileName,
+				Value:       ionburst.DefaultIonburstCredentialsProfileName,
 				Usage:       "The credentials profile to use",
 				Destination: &profile,
 			},
