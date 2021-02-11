@@ -11,8 +11,8 @@ import (
 	"gopkg.in/ini.v1"
 )
 
-const defaultIonburstConfigPath = ".ionburst/credentials"
-const defaultIonburstCredentialsProfileName = "default"
+const DefaultIonburstConfigPath = ".ionburst/credentials"
+const DefaultIonburstCredentialsProfileName = "default"
 
 func GetDefaultIonburstConfigPath() string {
 	cwd := envy.Get("HOME", "./")
@@ -21,7 +21,7 @@ func GetDefaultIonburstConfigPath() string {
 		cwd, _ = os.Getwd()
 	}
 
-	configPath := filepath.Join(cwd, defaultIonburstConfigPath)
+	configPath := filepath.Join(cwd, DefaultIonburstConfigPath)
 	return configPath
 }
 
@@ -33,13 +33,13 @@ func NewEmptyIonConfig(cli *Client) *IonConfig {
 		cwd, _ = os.Getwd()
 	}
 
-	configPath := filepath.Join(cwd, defaultIonburstConfigPath)
+	configPath := filepath.Join(cwd, DefaultIonburstConfigPath)
 
 	config := &IonConfig{
 		cli:            cli,
 		isNew:          true,
 		file:           configPath,
-		DefaultProfile: defaultIonburstCredentialsProfileName,
+		DefaultProfile: DefaultIonburstCredentialsProfileName,
 		Profiles:       map[string]*CredentialsProfile{},
 	}
 
@@ -55,7 +55,7 @@ func NewIonConfig(cli *Client, uri string, ionburstID string, ionburstKey string
 		cwd, _ = os.Getwd()
 	}
 
-	configPath := filepath.Join(cwd, defaultIonburstConfigPath)
+	configPath := filepath.Join(cwd, DefaultIonburstConfigPath)
 
 	return NewIonConfigWithFilePaths(cli, uri, ionburstID, ionburstKey, configPath)
 
@@ -67,11 +67,11 @@ func NewIonConfigWithFilePaths(cli *Client, uri string, ionburstID string, ionbu
 		cli:            cli,
 		isNew:          true,
 		file:           configFile,
-		DefaultProfile: defaultIonburstCredentialsProfileName,
+		DefaultProfile: DefaultIonburstCredentialsProfileName,
 		Profiles:       map[string]*CredentialsProfile{},
 	}
 
-	config.UpsertCredsProfile(defaultIonburstCredentialsProfileName, uri, ionburstID, ionburstKey)
+	config.UpsertCredsProfile(DefaultIonburstCredentialsProfileName, uri, ionburstID, ionburstKey)
 
 	return config.init()
 
@@ -120,7 +120,7 @@ func (conf *IonConfig) init() *IonConfig {
 func (conf *IonConfig) GetDefaultCredsProfile() (*CredentialsProfile, error) {
 	profName := conf.DefaultProfile
 	if profName == "" {
-		profName = defaultIonburstCredentialsProfileName
+		profName = DefaultIonburstCredentialsProfileName
 	}
 	return conf.GetCredsProfile(profName)
 }

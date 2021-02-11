@@ -10,7 +10,7 @@ import (
 
 type DeferredToken string
 
-func (cli *Client) getClassifications() ([]string, error) {
+func (cli *Client) GetClassifications() ([]string, error) {
 	cli.logger.Debug("Getting Classifications")
 	if res, err := cli.doGet("api/classification", nil); err != nil {
 		return nil, err
@@ -24,7 +24,7 @@ func (cli *Client) getClassifications() ([]string, error) {
 	}
 }
 
-func (cli *Client) put(id string, reader io.Reader, classification string) error {
+func (cli *Client) Put(id string, reader io.Reader, classification string) error {
 	cli.logger.Debug("Uploading Ionburst object", id)
 	_, err := cli.doPostBinary("api/data/"+id, reader, classification)
 	if err == nil {
@@ -33,7 +33,7 @@ func (cli *Client) put(id string, reader io.Reader, classification string) error
 	return err
 }
 
-func (cli *Client) putFromFile(id string, file string, classification string) error {
+func (cli *Client) PutFromFile(id string, file string, classification string) error {
 	cli.logger.Debug("Uploading Ionburst object", id, "from file", file)
 	rdr, err := os.Open(file)
 	if err != nil {
@@ -46,17 +46,17 @@ func (cli *Client) putFromFile(id string, file string, classification string) er
 	return err
 }
 
-func (cli *Client) get(id string) (io.Reader, error) {
+func (cli *Client) Get(id string) (io.Reader, error) {
 	cli.logger.Debug("Downloading Ionburst object", id)
 	return cli.doGetBinary("api/data/"+id, nil)
 }
 
-func (cli *Client) getWithLen(id string) (io.Reader, int64, error) {
+func (cli *Client) GetWithLen(id string) (io.Reader, int64, error) {
 	cli.logger.Debug("Downloading Ionburst object", id)
 	return cli.doGetBinaryLen("api/data/"+id, nil)
 }
 
-func (cli *Client) getToFile(id string, file string) error {
+func (cli *Client) GetToFile(id string, file string) error {
 	cli.logger.Debug("Downloading Ionburst object", id, "to file", file)
 	rdr, err := cli.doGetBinary("api/data/"+id, nil)
 	if err != nil {
@@ -71,14 +71,14 @@ func (cli *Client) getToFile(id string, file string) error {
 	return err
 }
 
-func (cli *Client) delete(id string) error {
+func (cli *Client) Delete(id string) error {
 	cli.logger.Debug("Starting Deletion of Ionburst object", id)
 	_, err := cli.doDelete("api/data/"+id, nil)
 	cli.logger.Debug("Deletion of Ionburst object", id, "complete")
 	return err
 }
 
-func (cli *Client) putDeferred(id string, reader io.Reader, classification string) (DeferredToken, error) {
+func (cli *Client) PutDeferred(id string, reader io.Reader, classification string) (DeferredToken, error) {
 	cli.logger.Debug("Uploading Ionburst object deferred for: ", id)
 	tk, err := cli.doPostBinaryDeferred("api/data/deferred/start/"+id, reader, classification)
 	if err == nil {
@@ -89,7 +89,7 @@ func (cli *Client) putDeferred(id string, reader io.Reader, classification strin
 	return DeferredToken(tk), nil
 }
 
-func (cli *Client) getDeferred(id string) (DeferredToken, error) {
+func (cli *Client) GetDeferred(id string) (DeferredToken, error) {
 	cli.logger.Debug("Downloading Ionburst object deferred for: ", id)
 	tk, err := cli.doGet("api/data/deferred/start/"+id, nil)
 	if err == nil {
@@ -106,7 +106,7 @@ func (cli *Client) getDeferred(id string) (DeferredToken, error) {
 	}
 }
 
-func (cli *Client) checkDeferred(token DeferredToken) (*models.WorkflowResult, error) {
+func (cli *Client) CheckDeferred(token DeferredToken) (*models.WorkflowResult, error) {
 	res, err := cli.doGet("api/data/deferred/check/"+string(token), nil)
 	if err != nil {
 		return nil, err
@@ -119,7 +119,7 @@ func (cli *Client) checkDeferred(token DeferredToken) (*models.WorkflowResult, e
 	return &wr, nil
 }
 
-func (cli *Client) fetchDeferred(token DeferredToken) (io.Reader, error) {
+func (cli *Client) FetchDeferred(token DeferredToken) (io.Reader, error) {
 	cli.logger.Debug("Downloading Deferred Ionburst object with token", token)
 	return cli.doGetBinary("api/data/deferred/fetch/"+string(token), nil)
 }

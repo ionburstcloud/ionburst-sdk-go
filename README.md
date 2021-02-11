@@ -75,35 +75,35 @@ func main() {
 //get a readable stream
 ioReader, _ := os.Open(FilePath)
 
-client.put(FileID, ioReader, classification)
+client.Put(FileID, ioReader, classification)
 //if classification is an empty string ("") it wont be passed
 
 //Upload from a filepath instead
-client.putFromFile(FileID, FilePath, classification)
+client.PutFromFile(FileID, FilePath, classification)
 ```
 
 #### Download Data
 
 ```go
-ioReader, err := client.get(FileID)
+ioReader, err := client.Get(FileID)
 
 //Download to a filepath instead
-err := client.getToFile(FileID, OutputFilePath)
+err := client.GetToFile(FileID, OutputFilePath)
 
 //Download and output the size of the downloaded content
-ioReader, sizeOfContent, err := client.getWithLen(FileID)
+ioReader, sizeOfContent, err := client.GetWithLen(FileID)
 ```
 
 #### Delete Data
 
 ```go
-err := client.delete(FileID)
+err := client.Delete(FileID)
 ```
 
 #### Get Classifcations
 
 ```go
-classifications, _ := client.getClassifications()
+classifications, _ := client.GetClassifications()
 ```
 
 ### Usage in Deferred Mode
@@ -111,7 +111,7 @@ classifications, _ := client.getClassifications()
 #### Upload Data Deferred
 
 ```go
-token, err := cli.putDeferred(name, r, "")
+token, err := cli.PutDeferred(name, r, "")
 if err != nil {
     t.Error(err)
     return
@@ -121,7 +121,7 @@ if err != nil {
 #### Download Data Deferred
 
 ```go
-token, err := cli.getDeferred(name)
+token, err := cli.GetDeferred(name)
 if err != nil {
     t.Error(err)
     return
@@ -131,7 +131,7 @@ if err != nil {
 #### Check Data Deferred
 
 ```go
-res, err = cli.checkDeferred(tk)
+res, err = cli.CheckDeferred(tk)
 if err != nil {
     t.Error(err)
     return
@@ -146,7 +146,7 @@ if err != nil {
 #### Fetch Data Deferred
 
 ```go
-ioReader, err := cli.fetchDeferred(tk)
+ioReader, err := cli.FetchDeferred(tk)
 if err != nil {
     t.Error(err)
     return
