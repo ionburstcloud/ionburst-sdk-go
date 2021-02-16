@@ -1,5 +1,5 @@
-VERSION := $(shell git describe --tags)
-API_VERSION := "1.0.0"
+VERSION := $(shell cat build_info | grep RELEASE_VERSION | cut -d "=" -f 2)
+API_VERSION := $(shell cat build_info | grep RELEASE_VERSION | cut -d "=" -f 2)
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECTNAME := $(shell basename "$(PWD)")
 
@@ -16,7 +16,6 @@ LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD) -X=main.APIV
 deps:
 	@echo "  >  Checking if there is any missing dependencies..."
 	go mod vendor
-
 
 ## exec: Run given command, wrapped with custom GOPATH. e.g; make exec run="go test ./..."
 exec:
@@ -42,27 +41,24 @@ go-clean:
 	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go clean
 
 go-cross-compile:
-	rm $(GOBIN)/ioncli-$(VERSION)-* 2> /dev/null
-	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-win64.exe $(GOFILES)
-	zip $(GOBIN)/ioncli-$(VERSION)-win64.zip $(GOBIN)/ioncli-$(VERSION)-win64.exe
-	GOOS=windows GOARCH=386 go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-win32.exe $(GOFILES)
-	zip $(GOBIN)/ioncli-$(VERSION)-win32.zip $(GOBIN)/ioncli-$(VERSION)-win32.exe
-	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-linux64 $(GOFILES)
-	tar -czvf $(GOBIN)/ioncli-$(VERSION)-linux64.tar.gz $(GOBIN)/ioncli-$(VERSION)-linux64
-	GOOS=linux GOARCH=386 go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-linux32 $(GOFILES)
-	tar -czvf $(GOBIN)/ioncli-$(VERSION)-linux32.tar.gz $(GOBIN)/ioncli-$(VERSION)-linux32
-	GOOS=linux GOARCH=arm go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-linux-arm32 $(GOFILES)
-	tar -czvf $(GOBIN)/ioncli-$(VERSION)-linux-arm32.tar.gz $(GOBIN)/ioncli-$(VERSION)-linux-arm32
-	GOOS=linux GOARCH=arm64 go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-linux-arm64 $(GOFILES)
-	tar -czvf $(GOBIN)/ioncli-$(VERSION)-linux-arm64.tar.gz $(GOBIN)/ioncli-$(VERSION)-linux-arm64
-	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli-$(VERSION)-darwin64 $(GOFILES)
-	tar -czvf $(GOBIN)/ioncli-$(VERSION)-darwin64.tar.gz $(GOBIN)/ioncli-$(VERSION)-darwin64
+	GOOS=windows GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli.exe $(GOFILES)
+	tar cvfj ioncli-$(VERSION)-win64.tar.bz2 -C $(GOBIN) ioncli.exe
+	rm -f $(GOBIN)/ioncli.exe
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli $(GOFILES)
+	tar cvfj ioncli-$(VERSION)-linux64.tar.bz2 -C $(GOBIN) ioncli
+	rm -f $(GOBIN)/ioncli
+	GOOS=linux GOARCH=arm64 go build $(LDFLAGS) -o $(GOBIN)/ioncli $(GOFILES)
+	tar cvfj ioncli-$(VERSION)-linux-arm64.tar.bz2 -C bin ioncli
+	rm -f $(GOBIN)/ioncli
+	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli $(GOFILES)
+	tar cvfj ioncli-$(VERSION)-darwin64.tar.bz2 -C bin ioncli
+	rm -f $(GOBIN)/ioncli
 
 .PHONY: help
 all: help
 help: Makefile
 	@echo
-	@echo " Choose a command run in "$(PROJECTNAME)":"
+	@echo " Choose a command to run in "$(PROJECTNAME)":"
 	@echo
 	@sed -n 's/^##//p' $< | column -t -s ':' |  sed -e 's/^/ /'
 	@echo
