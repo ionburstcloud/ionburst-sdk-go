@@ -1,0 +1,82 @@
+image: $IMAGE
+
+stages:
+  - test
+  - build
+  - publish
+
+test: 
+  stage: test
+  before_script:
+    - source /etc/profile 
+  script:
+    - go test
+
+compile:
+  stage: build
+  before_script:
+    - source /etc/profile
+    - release next-version --allow-current
+    - release next-version --allow-current > .next-version
+    - echo "RELEASE_SHA=$CI_COMMIT_SHA" > build_info
+    - echo "RELEASE_VERSION=$(cat .next-version)" >> build_info
+    - cat build_info
+    - . build_info
+    - echo $RELEASE_VERSION
+    - mc config host add scw-fr-par https://s3.fr-par.scw.cloud $SCW_AK $SCW_SK --api S3v4
+    - cat $MINISIGN > minisign.key
+    - echo $MINISIGN_PASS > min_pass
+  script:
+    - go mod tidy
+    - make go-cross-compile
+    - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-win64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
+    - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-linux64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
+    - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
+    - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-win64.tar.bz2 scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux64.tar.bz2 scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2 scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2 scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig scw-fr-par/ioncli/
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig scw-fr-par/ioncli/
+    - mc ls scw-fr-par/ioncli/
+    - rm -f minisign.key
+    - rm -f min_pass
+  artifacts:
+    paths:
+      - build_info
+
+publish:
+ stage: publish
+ script: 
+  - cat build_info
+  - . build_info
+  - echo "RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux64.tar.bz2" >> build_info
+  - echo "RELEASE_SIG_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig" >> build_info
+  - echo "RELEASE_DESC=\"ioncli Linux amd64 binary\"" >> build_info
+  - echo "RELEASE_SIG_DESC=\"ioncli Linux amd64 binary signature\"" >> build_info
+  - echo "ARM64_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2" >> build_info
+  - echo "ARM64_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig" >> build_info
+  - echo "ARM64_DESC=\"ioncli Linux arm64 binary\"" >> build_info
+  - echo "ARM64_SIG_DESC=\"ioncli Linux arm64 binary signature\"" >> build_info
+  - echo "MAC_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-darwin64.tar.bz2" >> build_info
+  - echo "MAC_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig" >> build_info
+  - echo "MAC_DESC=\"ioncli Darwin amd64 binary\"" >> build_info
+  - echo "MAC_SIG_DESC=\"ioncli Darwin amd64 binary signature\"" >> build_info
+  - echo "WIN_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-win64.tar.bz2" >> build_info
+  - echo "WIN_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig" >> build_info
+  - echo "WIN_DESC=\"ioncli Windows amd64 binary\"" >> build_info
+  - echo "WIN_SIG_DESC=\"ioncli Windows amd64 binary signature\"" >> build_info
+  - . build_info
+  - release changelog
+  - release commit-and-tag CHANGELOG.md build_info
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $RELEASE_URL -d "$RELEASE_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $RELEASE_SIG_URL -d "$RELEASE_SIG_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $ARM64_RELEASE_URL -d "$ARM64_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $ARM64_SIG_RELEASE_URL -d "$ARM64_SIG_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_RELEASE_URL -d "$MAC_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_SIG_RELEASE_URL -d "$MAC_SIG_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $WIN_RELEASE_URL -d "$WIN_DESC"
+  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $WIN_SIG_RELEASE_URL -d "$WIN_SIG_DESC"
