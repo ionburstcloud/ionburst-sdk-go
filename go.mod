@@ -3,10 +3,15 @@ module gitlab.com/ionburst/ionburst-sdk-go
 go 1.15
 
 require (
-	github.com/go-resty/resty/v2 v2.3.0
+	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
+	github.com/go-resty/resty/v2 v2.5.0
 	github.com/gobuffalo/envy v1.9.0
+	github.com/rogpeppe/go-internal v1.7.0 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
-	github.com/urfave/cli/v2 v2.2.0
+	github.com/urfave/cli/v2 v2.3.0
+	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
-	gopkg.in/ini.v1 v1.61.0
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777 // indirect
+	gopkg.in/ini.v1 v1.62.0
 )
