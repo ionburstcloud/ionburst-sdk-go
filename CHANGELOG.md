@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.0.2
+2021-03-01
+
+### Fixes
+
+- minor mod updates and add darwin arm64 to makefile (310295accada7ff40ed20823584f28801dbfc968)
+
 ## 1.0.1
 2021-02-22
 
