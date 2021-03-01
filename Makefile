@@ -53,6 +53,9 @@ go-cross-compile:
 	GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o $(GOBIN)/ioncli $(GOFILES)
 	tar cvfj ioncli-$(VERSION)-darwin64.tar.bz2 -C bin ioncli
 	rm -f $(GOBIN)/ioncli
+	GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o $(GOBIN)/ioncli $(GOFILES)
+	tar cvfj ioncli-$(VERSION)-darwin-arm64.tar.bz2 -C bin ioncli
+	rm -f $(GOBIN)/ioncli
 
 .PHONY: help
 all: help
