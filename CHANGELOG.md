@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.0.3
+2021-04-07
+
+### Fixes
+
+- minor dependency updates (796eddc86fa4935aefecb94e2f4fe18a353e4a1d)
+
 ## 1.0.2
 2021-03-01
 
