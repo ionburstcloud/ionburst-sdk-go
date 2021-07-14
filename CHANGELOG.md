@@ -3,6 +3,15 @@
 <!--- next entry here -->
 
 ## 1.0.3
+2021-07-14
+
+### Fixes
+
+- minor dependency updates (796eddc86fa4935aefecb94e2f4fe18a353e4a1d)
+- minor ci fix to ensure release links are unique (5208ebf1a63a2aac28d04d6d9474eca797bc683f)
+- minor dependency updates (efcd2543f15070e8648c471970595aab8e571550)
+
+## 1.0.3
 2021-04-07
 
 ### Fixes
