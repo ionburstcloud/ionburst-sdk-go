@@ -2,6 +2,22 @@
 
 <!--- next entry here -->
 
+## 1.0.4
+2021-07-14
+
+### Fixes
+
+- minor dependency updates (efcd2543f15070e8648c471970595aab8e571550)
+- new develop branch hadn't been merged with latest tag from master (a277174bc0664e808ff53e292bfac41e57c1c56d)
+
+## 1.0.4-develop.1
+2021-07-14
+
+### Fixes
+
+- minor dependency updates (efcd2543f15070e8648c471970595aab8e571550)
+- new develop branch hadn't been merged with latest tag from master (a277174bc0664e808ff53e292bfac41e57c1c56d)
+
 ## 1.0.3-develop.1
 2021-07-14
 
