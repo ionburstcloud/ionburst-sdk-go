@@ -34,17 +34,18 @@ compile:
     - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
     - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
     - minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-win64.tar.bz2 scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux64.tar.bz2 scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2 scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2 scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2 scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig scw-fr-par/ioncli/
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig scw-fr-par/ioncli/
-    - mc ls scw-fr-par/ioncli/
+    - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_path=scw-fr-par/ioncli/develop/; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_path=scw-fr-par/ioncli/; echo $ioncli_path; fi;
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-win64.tar.bz2 $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux64.tar.bz2 $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2 $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2 $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2 $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig $ioncli_path
+    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig $ioncli_path
+    - mc ls $ioncli_path
     - rm -f minisign.key
     - rm -f min_pass
   artifacts:
@@ -56,24 +57,25 @@ publish:
  script: 
   - cat build_info
   - . build_info
-  - echo "RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux64.tar.bz2" >> build_info
-  - echo "RELEASE_SIG_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig" >> build_info
+  - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_uri=https://ioncli.s3.fr-par.scw.cloud/develop; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_uri=https://ioncli.s3.fr-par.scw.cloud; echo $ioncli_path; fi;
+  - echo "RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux64.tar.bz2" >> build_info
+  - echo "RELEASE_SIG_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig" >> build_info
   - echo "RELEASE_DESC=\"ioncli Linux amd64 binary\"" >> build_info
   - echo "RELEASE_SIG_DESC=\"ioncli Linux amd64 binary signature\"" >> build_info
-  - echo "ARM64_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2" >> build_info
-  - echo "ARM64_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig" >> build_info
+  - echo "ARM64_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2" >> build_info
+  - echo "ARM64_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig" >> build_info
   - echo "ARM64_DESC=\"ioncli Linux arm64 binary\"" >> build_info
   - echo "ARM64_SIG_DESC=\"ioncli Linux arm64 binary signature\"" >> build_info
-  - echo "MAC_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-darwin64.tar.bz2" >> build_info
-  - echo "MAC_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig" >> build_info
+  - echo "MAC_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin64.tar.bz2" >> build_info
+  - echo "MAC_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig" >> build_info
   - echo "MAC_DESC=\"ioncli Darwin amd64 binary\"" >> build_info
   - echo "MAC_SIG_DESC=\"ioncli Darwin amd64 binary signature\"" >> build_info
-  - echo "MAC_ARM64_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2" >> build_info
-  - echo "MAC_ARM64_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig" >> build_info
+  - echo "MAC_ARM64_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2" >> build_info
+  - echo "MAC_ARM64_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig" >> build_info
   - echo "MAC_ARM64_DESC=\"ioncli Darwin arm64 binary\"" >> build_info
   - echo "MAC_ARM64_SIG_DESC=\"ioncli Darwin arm64 binary signature\"" >> build_info
-  - echo "WIN_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-win64.tar.bz2" >> build_info
-  - echo "WIN_SIG_RELEASE_URL=https://ioncli.s3.fr-par.scw.cloud/ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig" >> build_info
+  - echo "WIN_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-win64.tar.bz2" >> build_info
+  - echo "WIN_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig" >> build_info
   - echo "WIN_DESC=\"ioncli Windows amd64 binary\"" >> build_info
   - echo "WIN_SIG_DESC=\"ioncli Windows amd64 binary signature\"" >> build_info
   - . build_info
