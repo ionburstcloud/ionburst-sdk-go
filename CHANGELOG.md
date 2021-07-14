@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.0.5
+2021-07-14
+
+### Fixes
+
+- trigger 1.0.5-develop.1 (cc849cd0de5fa3e22a4380e054083ac0d28d4d59)
+
 ## 1.0.5-develop.1
 2021-07-14
 
