@@ -1,4 +1,7 @@
-# Ionburst SDK for Go [![Gitter](https://badges.gitter.im/ionburstlimited/community.svg)](https://gitter.im/ionburstlimited/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+![Gitlab pipeline status](https://img.shields.io/gitlab/pipeline/ionburst/ionburst-sdk-net/main?color=fb6a26&style=flat-square)
+[![slack](https://img.shields.io/badge/Slack-4A154B?style=flat-square&logo=slack&logoColor=white)](https://join.slack.com/t/ionburst-cloud/shared_invite/zt-panjkslf-Z5DOpU1OOeNPkXgklD~Cpg)
+
+# Ionburst SDK for Go
 
 The **Ionburst SDK for Go** enables Golang developers to easily work with [Ionburst Cloud][ionburst] and build ultra-secure and private storage into their applications.
 
@@ -157,19 +160,19 @@ if err != nil {
 
 Please use the following community resources to get help. We use [Gitlab issues][sdk-issues] to track bugs and feature requests.
 
-* Join the Ionburst Go chat on [gitter](https://gitter.im/ionburstlimited/community)
+* Join the Ionburst Cloud community on [Slack](https://join.slack.com/t/ionburst-cloud/shared_invite/zt-panjkslf-Z5DOpU1OOeNPkXgklD~Cpg)
 * Get in touch with [Ionburst Support](https://docs.ionburst.io/#/introduction?id=contact-amp-support)
 * If you have found a bug, please open an [issue][sdk-issues]
 
 ### Opening Issues
 
-If you find a bug, or have an issue with the Ionburst SDK for Go we would like to hear about it. Check the existing [issues][sdk-issues] and try to make sure your problem doesn’t already exist before opening a new issue. It’s helpful if you include the version of Ionburst SDK Go and the OS you’re using. Please include a stack trace and reduced repro case when appropriate, too.
+If you find a bug, or have an issue with the Ionburst SDK for Go we would like to hear about it. Check the existing [issues][sdk-issues] and try to make sure your problem doesn’t already exist before opening a new issue. It’s helpful if you include the version of `ionburst-sdk-go` and the OS you’re using. Please include a stack trace and steps to reproduce the issue.
 
 The [Gitlab issues][sdk-issues] are intended for bug reports and feature requests. For help and questions with using the Ionburst SDK for Go please make use of the resources listed in the Getting Help section. There are limited resources available for handling issues and by keeping the list of open issues clean we can respond in a timely manner.
 
 ## SDK Change Log
 
-The change log for the SDK can be found in the Gitlab Releases [page](https://gitlab.com/ionburst/ionburst-sdk-go/-/releases)
+The changelog for the SDK can be found in the [CHANGELOG file.](CHANGELOG.md)
 
 ## Contributors
 
