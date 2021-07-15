@@ -2,6 +2,18 @@
 
 <!--- next entry here -->
 
+## 1.1.0-develop.1
+2021-07-15
+
+### Features
+
+- add support for secrets API (49b7c1279294ce593bed61e13c898dbd24887686)
+- add initial secrets support to ioncli (51dd49e35c8cf233d5a850c7ffd6d72ce498488d)
+
+### Fixes
+
+- add tests for secrets and deferred secrets (50341ccbc89ab35cee4584b2df24bc3fdc4ed0d7)
+
 ## 1.0.5
 2021-07-14
 
