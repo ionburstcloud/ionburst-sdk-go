@@ -13,14 +13,6 @@ var ClassificationsCmd = &cli.Command{
 	Usage:   "Manage Ionburst Classifications",
 	Subcommands: []*cli.Command{
 		{
-			Name:  "add",
-			Usage: "Add a classification for use",
-			Action: func(c *cli.Context) error {
-				fmt.Println("This is not currently available")
-				return nil
-			},
-		},
-		{
 			Name:  "list",
 			Usage: "List all available classifications",
 			Action: func(c *cli.Context) error {
@@ -39,14 +31,6 @@ var ClassificationsCmd = &cli.Command{
 						fmt.Println(cls[item])
 					}
 				}
-				return nil
-			},
-		},
-		{
-			Name:  "remove",
-			Usage: "Remove a classification",
-			Action: func(c *cli.Context) error {
-				fmt.Println("This is not currently available")
 				return nil
 			},
 		},
