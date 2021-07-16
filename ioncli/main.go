@@ -89,6 +89,7 @@ VERSION:
 		},
 		Commands: []*cli.Command{
 			ClassificationsCmd,
+			SecretsCmd,
 			{
 				Name:      "get",
 				Usage:     "Download an object from Ionburst",

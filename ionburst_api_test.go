@@ -77,3 +77,39 @@ func TestPostData(t *testing.T) {
 	fmt.Printf("Deleted: %s\n", name)
 
 }
+
+func TestPostSecrets(t *testing.T) {
+	cli, err := NewClient()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	name, ba := makeRandomPayload(1024)
+
+	r := bytes.NewReader(ba)
+
+	err = cli.PutSecrets(name, r, "")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	fmt.Printf("Uploaded secret: %s\n", name)
+
+	_, err = cli.GetSecrets(name)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	fmt.Printf("Downloaded secret: %s\n", name)
+
+	err = cli.DeleteSecrets(name)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	fmt.Printf("Deleted secret: %s\n", name)
+}
