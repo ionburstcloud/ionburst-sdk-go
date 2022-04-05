@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.1.2-develop.1
+2022-04-05
+
+### Fixes
+
+- package updates (397fab939948c56aa80e4b0e8165508dd9300e15)
+
 ## 1.1.1
 2021-07-26
 
