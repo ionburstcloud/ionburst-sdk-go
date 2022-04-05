@@ -2,6 +2,20 @@
 
 <!--- next entry here -->
 
+## 1.1.1
+2021-07-26
+
+### Fixes
+
+- minor dependency update (9a8d701be2e8e762f9a8c4b4ca57086cf1c74185)
+
+## 1.1.1-develop.1
+2021-07-26
+
+### Fixes
+
+- minor dependency update (9a8d701be2e8e762f9a8c4b4ca57086cf1c74185)
+
 ## 1.1.0
 2021-07-16
 
