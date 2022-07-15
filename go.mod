@@ -10,6 +10,6 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0
-	golang.org/x/net v0.0.0-20220403103023-749bd193bc2b // indirect
-	gopkg.in/ini.v1 v1.66.4
+	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
+	gopkg.in/ini.v1 v1.66.6
 )
