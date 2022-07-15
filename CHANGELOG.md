@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.1.2-develop.2
+2022-07-15
+
+### Fixes
+
+- minor package updates (ff849b56b89d19e30a51fa084e16e1ba043d39d9)
+
 ## 1.1.2-develop.1
 2022-04-05
 
