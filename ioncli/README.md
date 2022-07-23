@@ -26,6 +26,7 @@ COMMANDS:
    get                     Download an object from Ionburst
    put                     Upload an object to Ionburst
    delete                  Delete an object from Ionburst
+   head                    Check an object from Ionburst
    help, h                 Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
@@ -49,7 +50,6 @@ Classifications: 1
 Classification
 -----------------
 Restricted
-
 ```
 
 ### Upload an object
@@ -58,7 +58,6 @@ Restricted
 $ ioncli put <OBJECT_ID> <FILENAME>
 
 $ ioncli put testing_file testingfile
-
 ```
 
 ### Download an object
@@ -67,16 +66,22 @@ $ ioncli put testing_file testingfile
 $ ioncli get <OBJECT_ID> <OUTPUT_FILENAME>
 
 $ ioncli get testing_file testingfile
-
 ```
 
 ### Delete an object
 
 ```sh
-$ ioncli get <OBJECT_ID> <OUTPUT_FILENAME>
+$ ioncli delete <OBJECT_ID>
 
-$ ioncli get testing_file testingfile
+$ ioncli delete testing_file
+```
 
+### Check an object
+
+```sh
+$ ioncli head <OBJECT_ID>
+
+$ ioncli head testing_file
 ```
 
 ## Building
@@ -98,5 +103,4 @@ $ make compile
 $ make cross-compile
 
 ## Look in the bin folder for built binaries
-
 ```

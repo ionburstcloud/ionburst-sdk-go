@@ -204,6 +204,31 @@ VERSION:
 					return nil
 				},
 			},
+			{
+				Name:      "head",
+				Usage:     "Check an object from Ionburst",
+				ArgsUsage: "<id>",
+				Action: func(c *cli.Context) error {
+					id := c.Args().Get(0)
+					if id == "" {
+						return errors.New("Please specify an id for the object to be deleted")
+					}
+
+					cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
+					if err != nil {
+						return err
+					}
+
+					size, err := cli.HeadWithLen(id)
+					if err != nil {
+						return err
+					} else {
+						fmt.Printf("Size: %d\n", size)
+					}
+
+					return nil
+				},
+			},
 		},
 	}
 
