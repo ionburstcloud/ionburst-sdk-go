@@ -132,6 +132,30 @@ func (cli *Client) DeleteSecrets(id string) error {
 	return err
 }
 
+func (cli *Client) Head(id string) error {
+	cli.logger.Debug("Querying Ionburst object", id)
+	_, err := cli.doHead("api/data/"+id, nil)
+	cli.logger.Debug("Query of Ionburst object", id, "complete")
+	return err
+}
+
+func (cli *Client) HeadSecrets(id string) error {
+	cli.logger.Debug("Querying Ionburst secret", id)
+	_, err := cli.doHead("api/secrets/"+id, nil)
+	cli.logger.Debug("Query of Ionburst secret", id, "complete")
+	return err
+}
+
+func (cli *Client) HeadWithLen(id string) (int64, error) {
+	cli.logger.Debug("Querying Ionburst object", id)
+	return cli.doHeadLen("api/data/"+id, nil)
+}
+
+func (cli *Client) HeadSecretsWithLen(id string) (int64, error) {
+	cli.logger.Debug("Querying Ionburst secret", id)
+	return cli.doHeadLen("api/secrets/"+id, nil)
+}
+
 func (cli *Client) PutDeferred(id string, reader io.Reader, classification string) (DeferredToken, error) {
 	cli.logger.Debug("Uploading Ionburst object deferred for: ", id)
 	tk, err := cli.doPostBinaryDeferred("api/data/deferred/start/"+id, reader, classification)

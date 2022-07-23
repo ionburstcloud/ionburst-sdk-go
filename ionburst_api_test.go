@@ -60,6 +60,20 @@ func TestPostData(t *testing.T) {
 
 	fmt.Printf("Uploaded: %s\n", name)
 
+	err = cli.Head(name)
+	if err != nil {
+		t.Error(err)
+	} else {
+		fmt.Printf("Checked: %s\n", name)
+	}
+
+	size, err := cli.HeadWithLen(name)
+	if err != nil {
+		t.Error(err)
+	} else {
+		fmt.Printf("Size: %d\n", size)
+	}
+
 	_, err = cli.Get(name)
 	if err != nil {
 		t.Error(err)
@@ -93,6 +107,13 @@ func TestPostSecrets(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 		return
+	}
+
+	err = cli.HeadSecrets(name)
+	if err != nil {
+		t.Error(err)
+	} else {
+		fmt.Printf("Checked: %s\n", name)
 	}
 
 	fmt.Printf("Uploaded secret: %s\n", name)

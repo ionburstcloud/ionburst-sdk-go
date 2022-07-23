@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
-	"os"
-
 	"github.com/go-resty/resty/v2"
 	"gitlab.com/ionburst/ionburst-sdk-go/models"
+	"io"
+	"os"
+	"strconv"
 )
 
 func FileExists(filename string) bool {
@@ -382,4 +382,58 @@ func (cli *Client) doDelete(url string, params map[string]string) (*resty.Respon
 		}
 	}
 
+}
+
+// HEAD methods
+
+func (cli *Client) doHead(url string, params map[string]string) (*resty.Response, error) {
+	if uri, req, err := cli.makeClientFromCreds(); err != nil {
+		return nil, err
+	} else {
+		if uri[len(uri)-1] != '/' {
+			uri += "/"
+		}
+		if params != nil {
+			req.SetQueryParams(params)
+		}
+		res, err := req.Head(uri + url)
+		if err != nil {
+			return nil, err
+		}
+		if redo, err := cli.checkResponse(res); err != nil {
+			return nil, err
+		} else if redo {
+			return cli.doGet(url, params)
+		} else {
+			return res, nil
+		}
+	}
+}
+
+func (cli *Client) doHeadLen(url string, params map[string]string) (int64, error) {
+	if uri, req, err := cli.makeClientFromCreds(); err != nil {
+		return 0, err
+	} else {
+		if uri[len(uri)-1] != '/' {
+			uri += "/"
+		}
+		if params != nil {
+			req.SetQueryParams(params)
+		}
+		res, err := req.Head(uri + url)
+		if err != nil {
+			return 0, err
+		}
+		if redo, err := cli.checkResponse(res); err != nil {
+			return 0, err
+		} else if redo {
+			return cli.doHeadLen(url, params)
+		} else {
+			originalLength, err := strconv.ParseInt(res.Header()["X-Original-Length"][0], 10, 64)
+			if err != nil {
+				return 0, err
+			}
+			return originalLength, nil
+		}
+	}
 }
