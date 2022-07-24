@@ -2,6 +2,14 @@
 
 <!--- next entry here -->
 
+## 1.2.0-develop.1
+2022-07-24
+
+### Features
+
+- add new HEAD method for Data and Secrets (e6e07511c327ce8d1b6ceadb1826ce0c1f6df77c)
+- add head method support to ioncli (7f6d0ec97104afa74a9a283541cfc7eb596a677d)
+
 ## 1.1.2
 2022-07-15
 
