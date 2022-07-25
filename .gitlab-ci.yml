@@ -57,7 +57,7 @@ compile_mac:
     - mkdir -p bin
     - cat $MINISIGN > bin/minisign.key
     - echo $MINISIGN_PASS > bin/min_pass
-    - cp ioncli/.gon.hcl ioncli/build_info ioncli/ioncli.entitlements bin/
+    - cp build_info ioncli/.gon.hcl ioncli/ioncli.entitlements bin/
     - "ls -lah"
     - export BUILD=$(shell git rev-parse --short HEAD)
   script:
@@ -96,7 +96,7 @@ compile_mac_arm64:
     - mkdir -p bin
     - cat $MINISIGN > bin/minisign.key
     - echo $MINISIGN_PASS > bin/min_pass
-    - cp ioncli/.gon.hcl ioncli/build_info ioncli/ioncli.entitlements bin/
+    - cp build_info ioncli/.gon.hcl ioncli/ioncli.entitlements bin/
     - "ls -lah"
     - export BUILD=$(shell git rev-parse --short HEAD)
   script:
