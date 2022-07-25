@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.2.0-develop.2
+2022-07-25
+
+### Fixes
+
+- add notarization to ioncli mac builds (da90d9725cee64c0bbf774821ee3b349afd88020)
+
 ## 1.2.0-develop.1
 2022-07-24
 
