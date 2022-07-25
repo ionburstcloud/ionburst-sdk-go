@@ -51,6 +51,11 @@ compile:
 compile_mac:
   stage: build
   before_script:
+    - release next-version --allow-current
+    - release next-version --allow-current > .next-version
+    - echo "RELEASE_SHA=$CI_COMMIT_SHA" > build_info
+    - echo "RELEASE_VERSION=$(cat .next-version)" >> build_info
+    - cat build_info
     - . build_info
     - go get -v -d
     - mc config host add scw-fr-par https://s3.fr-par.scw.cloud $SCW_AK $SCW_SK --api S3v4
@@ -81,15 +86,17 @@ compile_mac:
     - mc ls $ioncli_path
     - rm -f minisign.key
     - rm -f min_pass
-  artifacts:
-    paths:
-      - build_info
   tags:
     - go-mac
 
 compile_mac_arm64:
   stage: build
   before_script:
+    - release next-version --allow-current
+    - release next-version --allow-current > .next-version
+    - echo "RELEASE_SHA=$CI_COMMIT_SHA" > build_info
+    - echo "RELEASE_VERSION=$(cat .next-version)" >> build_info
+    - cat build_info
     - . build_info
     - go get -v -d
     - mc config host add scw-fr-par https://s3.fr-par.scw.cloud $SCW_AK $SCW_SK --api S3v4
@@ -120,9 +127,6 @@ compile_mac_arm64:
     - mc ls $ioncli_path
     - rm -f minisign.key
     - rm -f min_pass
-  artifacts:
-    paths:
-      - build_info
   tags:
     - go-mac-arm64
 
