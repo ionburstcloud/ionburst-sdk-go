@@ -5,10 +5,10 @@ stages:
   - build
   - publish
 
-test: 
+test:
   stage: test
   before_script:
-    - source /etc/profile 
+    - source /etc/profile
   script:
     - go test
 
@@ -51,43 +51,49 @@ compile:
   artifacts:
     paths:
       - build_info
+  only:
+    - main
+    - develop
 
 publish:
- stage: publish
- script: 
-  - cat build_info
-  - . build_info
-  - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_uri=https://ioncli.s3.fr-par.scw.cloud/develop; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_uri=https://ioncli.s3.fr-par.scw.cloud; echo $ioncli_path; fi;
-  - echo "RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux64.tar.bz2" >> build_info
-  - echo "RELEASE_SIG_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig" >> build_info
-  - echo "RELEASE_DESC=\"ioncli Linux amd64 binary\"" >> build_info
-  - echo "RELEASE_SIG_DESC=\"ioncli Linux amd64 binary signature\"" >> build_info
-  - echo "ARM64_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2" >> build_info
-  - echo "ARM64_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig" >> build_info
-  - echo "ARM64_DESC=\"ioncli Linux arm64 binary\"" >> build_info
-  - echo "ARM64_SIG_DESC=\"ioncli Linux arm64 binary signature\"" >> build_info
-  - echo "MAC_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin64.tar.bz2" >> build_info
-  - echo "MAC_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig" >> build_info
-  - echo "MAC_DESC=\"ioncli Darwin amd64 binary\"" >> build_info
-  - echo "MAC_SIG_DESC=\"ioncli Darwin amd64 binary signature\"" >> build_info
-  - echo "MAC_ARM64_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2" >> build_info
-  - echo "MAC_ARM64_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig" >> build_info
-  - echo "MAC_ARM64_DESC=\"ioncli Darwin arm64 binary\"" >> build_info
-  - echo "MAC_ARM64_SIG_DESC=\"ioncli Darwin arm64 binary signature\"" >> build_info
-  - echo "WIN_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-win64.tar.bz2" >> build_info
-  - echo "WIN_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig" >> build_info
-  - echo "WIN_DESC=\"ioncli Windows amd64 binary\"" >> build_info
-  - echo "WIN_SIG_DESC=\"ioncli Windows amd64 binary signature\"" >> build_info
-  - . build_info
-  - release changelog
-  - release commit-and-tag CHANGELOG.md build_info
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $RELEASE_URL -d "$RELEASE_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $RELEASE_SIG_URL -d "$RELEASE_SIG_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $ARM64_RELEASE_URL -d "$ARM64_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $ARM64_SIG_RELEASE_URL -d "$ARM64_SIG_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_RELEASE_URL -d "$MAC_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_SIG_RELEASE_URL -d "$MAC_SIG_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_ARM64_RELEASE_URL -d "$MAC_ARM64_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_ARM64_SIG_RELEASE_URL -d "$MAC_ARM64_SIG_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $WIN_RELEASE_URL -d "$WIN_DESC"
-  - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $WIN_SIG_RELEASE_URL -d "$WIN_SIG_DESC"
+  stage: publish
+  script:
+    - cat build_info
+    - . build_info
+    - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_uri=https://ioncli.s3.fr-par.scw.cloud/develop; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_uri=https://ioncli.s3.fr-par.scw.cloud; echo $ioncli_path; fi;
+    - echo "RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux64.tar.bz2" >> build_info
+    - echo "RELEASE_SIG_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux64.tar.bz2.minisig" >> build_info
+    - echo "RELEASE_DESC=\"ioncli Linux amd64 binary\"" >> build_info
+    - echo "RELEASE_SIG_DESC=\"ioncli Linux amd64 binary signature\"" >> build_info
+    - echo "ARM64_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2" >> build_info
+    - echo "ARM64_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-linux-arm64.tar.bz2.minisig" >> build_info
+    - echo "ARM64_DESC=\"ioncli Linux arm64 binary\"" >> build_info
+    - echo "ARM64_SIG_DESC=\"ioncli Linux arm64 binary signature\"" >> build_info
+    - echo "MAC_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin64.tar.bz2" >> build_info
+    - echo "MAC_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig" >> build_info
+    - echo "MAC_DESC=\"ioncli Darwin amd64 binary\"" >> build_info
+    - echo "MAC_SIG_DESC=\"ioncli Darwin amd64 binary signature\"" >> build_info
+    - echo "MAC_ARM64_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2" >> build_info
+    - echo "MAC_ARM64_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig" >> build_info
+    - echo "MAC_ARM64_DESC=\"ioncli Darwin arm64 binary\"" >> build_info
+    - echo "MAC_ARM64_SIG_DESC=\"ioncli Darwin arm64 binary signature\"" >> build_info
+    - echo "WIN_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-win64.tar.bz2" >> build_info
+    - echo "WIN_SIG_RELEASE_URL=$ioncli_uri/ioncli-$RELEASE_VERSION-win64.tar.bz2.minisig" >> build_info
+    - echo "WIN_DESC=\"ioncli Windows amd64 binary\"" >> build_info
+    - echo "WIN_SIG_DESC=\"ioncli Windows amd64 binary signature\"" >> build_info
+    - . build_info
+    - release changelog
+    - release commit-and-tag CHANGELOG.md build_info
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $RELEASE_URL -d "$RELEASE_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $RELEASE_SIG_URL -d "$RELEASE_SIG_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $ARM64_RELEASE_URL -d "$ARM64_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $ARM64_SIG_RELEASE_URL -d "$ARM64_SIG_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_RELEASE_URL -d "$MAC_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_SIG_RELEASE_URL -d "$MAC_SIG_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_ARM64_RELEASE_URL -d "$MAC_ARM64_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $MAC_ARM64_SIG_RELEASE_URL -d "$MAC_ARM64_SIG_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $WIN_RELEASE_URL -d "$WIN_DESC"
+    - release --ci-commit-tag v$RELEASE_VERSION add-download-link -n release -u $WIN_SIG_RELEASE_URL -d "$WIN_SIG_DESC"
+  only:
+    - main
+    - develop
