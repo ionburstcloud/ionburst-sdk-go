@@ -27,6 +27,7 @@ bin
 vendor
 
 .ionburst
+.vscode
 
 .tempfile
 .tempfile2
