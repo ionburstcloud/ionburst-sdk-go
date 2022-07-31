@@ -67,7 +67,7 @@ type Client struct {
 
 func (cli *Client) init() (*Client, error) {
 
-	//load what needs to be loaded int he correct order
+	//load what needs to be loaded in the correct order
 	//errList := []error{}
 
 	// 1. Try Load config, do we have environment variables?
@@ -76,7 +76,7 @@ func (cli *Client) init() (*Client, error) {
 	ionburstCredsProfileName := envy.Get("IONBURST_CREDENTIALS_PROFILE", "")
 	conf, err := LoadIonConfig(cli, ionburstConfigPath)
 	if err != nil {
-		//we couldnt load a config in either the default or specified locations, lets create an empty one
+		//we couldn't load a config in either the default or specified locations, lets create an empty one
 		cli.ionConfig = NewEmptyIonConfig(cli)
 
 		//now we check if the environment variables are there...
