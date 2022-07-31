@@ -1,14 +1,23 @@
 package ionburst
 
 import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io"
+	"log"
+	"math"
 	"os"
 
+	"github.com/google/uuid"
 	"gitlab.com/ionburst/ionburst-sdk-go/models"
 )
 
 type DeferredToken string
+
+const objectLimit int = 50000000
 
 func (cli *Client) GetClassifications() ([]string, error) {
 	cli.logger.Debug("Getting Classifications")
@@ -65,6 +74,102 @@ func (cli *Client) PutSecretsFromFile(id string, file string, classification str
 	if err == nil {
 		cli.logger.Debug("Ionburst Upload Complete for", id)
 	}
+	return err
+}
+
+func (cli *Client) PutManifest(id string, reader io.Reader, classification string) error {
+	cli.logger.Debug("Creating manifest for Ionburst object", id)
+	_, err := cli.doPostBinary("api/data/"+id, reader, classification)
+	if err == nil {
+		cli.logger.Debug("Ionburst Upload Complete for", id)
+	}
+	return err
+}
+
+func (cli *Client) PutManifestFromFile(id string, file string, classification string) error {
+	cli.logger.Debug("Creating manifest for Ionburst object: ", id, "from file ", file)
+	rdr, err := os.Open(file)
+	if err != nil {
+		return err
+	}
+
+	hashRaw := sha256.New()
+	if _, err := io.Copy(hashRaw, rdr); err != nil {
+		return err
+	}
+	hash := base64.StdEncoding.EncodeToString(hashRaw.Sum(nil))
+
+	fileInfo, _ := rdr.Stat()
+
+	var fileSize = fileInfo.Size()
+
+	totalPartsNum := uint64(math.Ceil(float64(fileSize) / float64(objectLimit)))
+
+	cli.logger.Debug("Number of chunks: ", totalPartsNum)
+
+	var manifest models.Manifest
+
+	manifest.Name = id
+	manifest.ChunkCount = int(totalPartsNum)
+	manifest.ChunkSize = objectLimit
+	manifest.MaxSize = objectLimit
+	manifest.Size = int(fileSize)
+	manifest.Hash = hash
+
+	for i := uint64(0); i < totalPartsNum; i++ {
+		chunkID := uuid.NewString()
+		cli.logger.Debug("Chunk ID: ", chunkID)
+
+		partSize := int64(math.Min(float64(objectLimit), float64(fileSize-int64(i*uint64(objectLimit)))))
+		cli.logger.Debug("Chunk size: ", partSize)
+		offset := int64(i * uint64(objectLimit))
+		cli.logger.Debug("Chunk offset: ", offset)
+		buffer := make([]byte, partSize)
+
+		_, err := rdr.ReadAt(buffer, offset)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println(err)
+			}
+			fmt.Println("whoops")
+			fmt.Println(err)
+			break
+		}
+
+		r := bytes.NewReader(buffer)
+		chunkHashRaw := sha256.New()
+
+		if _, err := io.Copy(chunkHashRaw, r); err != nil {
+			log.Println(err)
+		}
+
+		chunkHash := base64.StdEncoding.EncodeToString(chunkHashRaw.Sum(nil))
+
+		r = bytes.NewReader(buffer)
+		_, err = cli.doPostBinary("api/data/"+chunkID, r, classification)
+		if err != nil {
+			cli.logger.Debug(err)
+		} else if err == nil {
+			cli.logger.Debug("Ionburst Chunk Upload Complete for", chunkID)
+		}
+
+		fmt.Println("Split to: ", chunkID)
+
+		manifest.Chunks = append(manifest.Chunks, models.Chunks{
+			ID:   chunkID,
+			Ord:  int(i) + 1,
+			Hash: chunkHash,
+		})
+	}
+	m, err := json.Marshal(manifest)
+
+	r := bytes.NewReader(m)
+
+	_, err = cli.doPostBinary("api/data/"+id, r, classification)
+	if err == nil {
+		cli.logger.Debug("Ionburst Manifest Upload Complete for", id)
+	}
+
 	return err
 }
 
