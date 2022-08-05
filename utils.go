@@ -1,6 +1,8 @@
 package ionburst
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -436,4 +438,17 @@ func (cli *Client) doHeadLen(url string, params map[string]string) (int64, error
 			return originalLength, nil
 		}
 	}
+}
+
+// utility functions
+
+func objectHash(reader io.Reader) (string, error) {
+	hashRaw := sha256.New()
+	if _, err := io.Copy(hashRaw, reader); err != nil {
+		return "", err
+	}
+
+	hash := base64.StdEncoding.EncodeToString(hashRaw.Sum(nil))
+
+	return hash, nil
 }

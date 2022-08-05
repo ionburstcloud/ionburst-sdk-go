@@ -79,11 +79,79 @@ func (cli *Client) PutSecretsFromFile(id string, file string, classification str
 
 func (cli *Client) PutManifest(id string, reader io.Reader, classification string) error {
 	cli.logger.Debug("Creating manifest for Ionburst object", id)
-	_, err := cli.doPostBinary("api/data/"+id, reader, classification)
-	if err == nil {
-		cli.logger.Debug("Ionburst Upload Complete for", id)
+
+	hash, err := objectHash(reader)
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(reader)
+
+	fileInfo := buf.Len()
+
+	var fileSize = int64(fileInfo)
+
+	totalPartsNum := uint64(math.Ceil(float64(fileSize) / float64(objectLimit)))
+
+	cli.logger.Debug("Number of chunks: ", totalPartsNum)
+
+	var manifest models.Manifest
+
+	manifest.Name = id
+	manifest.ChunkCount = int(totalPartsNum)
+	manifest.ChunkSize = objectLimit
+	manifest.MaxSize = objectLimit
+	manifest.Size = int(fileSize)
+	manifest.Hash = hash
+
+	for i := uint64(0); i < totalPartsNum; i++ {
+		chunkID := uuid.NewString()
+		cli.logger.Debug("Chunk ID: ", chunkID)
+
+		partSize := int64(math.Min(float64(objectLimit), float64(fileSize-int64(i*uint64(objectLimit)))))
+		cli.logger.Debug("Chunk size: ", partSize)
+		offset := int64(i * uint64(objectLimit))
+		cli.logger.Debug("Chunk offset: ", offset)
+		buffer := make([]byte, partSize)
+
+		_, err := reader.ReaderAt(buffer, offset)
+		if err != nil {
+			if err != io.EOF {
+				fmt.Println(err)
+			}
+			fmt.Println("whoops")
+			fmt.Println(err)
+			break
+		}
+
+		r := bytes.NewReader(buffer)
+		chunkHash, err := objectHash(r)
+
+		r = bytes.NewReader(buffer)
+		_, err = cli.doPostBinary("api/data/"+chunkID, r, classification)
+		if err != nil {
+			cli.logger.Debug(err)
+		} else if err == nil {
+			cli.logger.Debug("Ionburst Chunk Upload Complete for: ", chunkID)
+		}
+
+		fmt.Println("Split to: ", chunkID)
+
+		manifest.Chunks = append(manifest.Chunks, models.Chunks{
+			ID:   chunkID,
+			Ord:  int(i) + 1,
+			Hash: chunkHash,
+		})
 	}
+	m, err := json.Marshal(manifest)
+
+	r := bytes.NewReader(m)
+
+	_, err = cli.doPostBinary("api/data/"+id, r, classification)
+	if err == nil {
+		cli.logger.Debug("Ionburst Manifest Upload Complete for: ", id)
+	}
+
 	return err
+
 }
 
 func (cli *Client) PutManifestFromFile(id string, file string, classification string) error {
@@ -93,11 +161,7 @@ func (cli *Client) PutManifestFromFile(id string, file string, classification st
 		return err
 	}
 
-	hashRaw := sha256.New()
-	if _, err := io.Copy(hashRaw, rdr); err != nil {
-		return err
-	}
-	hash := base64.StdEncoding.EncodeToString(hashRaw.Sum(nil))
+	hash, err := objectHash(rdr)
 
 	fileInfo, _ := rdr.Stat()
 
@@ -150,7 +214,7 @@ func (cli *Client) PutManifestFromFile(id string, file string, classification st
 		if err != nil {
 			cli.logger.Debug(err)
 		} else if err == nil {
-			cli.logger.Debug("Ionburst Chunk Upload Complete for", chunkID)
+			cli.logger.Debug("Ionburst Chunk Upload Complete for: ", chunkID)
 		}
 
 		fmt.Println("Split to: ", chunkID)
@@ -167,7 +231,7 @@ func (cli *Client) PutManifestFromFile(id string, file string, classification st
 
 	_, err = cli.doPostBinary("api/data/"+id, r, classification)
 	if err == nil {
-		cli.logger.Debug("Ionburst Manifest Upload Complete for", id)
+		cli.logger.Debug("Ionburst Manifest Upload Complete for: ", id)
 	}
 
 	return err
@@ -204,7 +268,7 @@ func (cli *Client) GetToFile(id string, file string) error {
 		return err
 	}
 	_, err = io.Copy(wr, rdr)
-	cli.logger.Debug("Ionburst object download", id, "complete")
+	cli.logger.Debug("Ionburst object download", id, " complete")
 	return err
 }
 
@@ -219,21 +283,53 @@ func (cli *Client) GetSecretsToFile(id string, file string) error {
 		return err
 	}
 	_, err = io.Copy(wr, rdr)
-	cli.logger.Debug("Ionburst secret download", id, "complete")
+	cli.logger.Debug("Ionburst secret download", id, " complete")
 	return err
 }
 
 func (cli *Client) Delete(id string) error {
 	cli.logger.Debug("Starting Deletion of Ionburst object", id)
 	_, err := cli.doDelete("api/data/"+id, nil)
-	cli.logger.Debug("Deletion of Ionburst object", id, "complete")
+	cli.logger.Debug("Deletion of Ionburst object", id, " complete")
 	return err
 }
 
 func (cli *Client) DeleteSecrets(id string) error {
 	cli.logger.Debug("Starting Deletion of Ionburst secret", id)
 	_, err := cli.doDelete("api/secrets/"+id, nil)
-	cli.logger.Debug("Deletion of Ionburst secret", id, "complete")
+	cli.logger.Debug("Deletion of Ionburst secret", id, " complete")
+	return err
+}
+
+func (cli *Client) DeleteManifest(id string) error {
+	cli.logger.Debug("Starting Deletion of Ionburst manifest: ", id)
+
+	cli.logger.Debug("Retrieving Ionburst manifest: ", id)
+
+	manifestObject, err := cli.doGetBinary("api/data/"+id, nil)
+	if err != nil {
+		return err
+	}
+
+	var manifest models.Manifest
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(manifestObject)
+
+	_ = json.Unmarshal(buf.Bytes(), &manifest)
+
+	for i := 0; i < len(manifest.Chunks); i++ {
+		cli.logger.Debug("Deleting chunk: ", manifest.Chunks[i].ID)
+		_, err := cli.doDelete("api/data/"+manifest.Chunks[i].ID, nil)
+		if err != nil {
+			return err
+		}
+		cli.logger.Debug("Deletion of chunk: ", manifest.Chunks[i].ID, " complete")
+	}
+
+	cli.logger.Debug("Deleting manifest: ", id)
+	_, err = cli.doDelete("api/data/"+id, nil)
+
 	return err
 }
 

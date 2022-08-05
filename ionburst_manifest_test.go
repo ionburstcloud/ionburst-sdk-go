@@ -1,19 +1,20 @@
 package ionburst
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
 )
 
 func TestManifestData(t *testing.T) {
-	cli, err := NewClientPathAndProfile("", "send_dev", true)
+	cli, err := NewClientPathAndProfile("", "dhcp-sucks", true)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	name := "go-sdk-manifest"
-	file := "/tmp/STScI-01G7DB1FHPMJCCY59CQGZC1YJQ.png"
+	file := "/tmp/STScI-01G7ETPF7DVBJAC42JR5N6EQRH.png"
 
 	err = cli.PutManifestFromFile(name, file, "")
 	if err != nil {
@@ -37,11 +38,21 @@ func TestManifestData(t *testing.T) {
 		fmt.Printf("Size: %d\n", size)
 	}
 
-	_, err = cli.Get(name)
+	manifest, err := cli.Get(name)
 	if err != nil {
 		t.Error(err)
 		return
+	} else {
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(manifest)
+		fmt.Println(buf.String())
 	}
 
-	fmt.Printf("Downloaded: %s\n", name)
+	err = cli.DeleteManifest(name)
+	if err != nil {
+		t.Error(err)
+		return
+	} else {
+		fmt.Println("Manifest deleted.")
+	}
 }
