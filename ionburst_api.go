@@ -78,12 +78,12 @@ func (cli *Client) PutSecretsFromFile(id string, file string, classification str
 }
 
 func (cli *Client) PutManifest(id string, reader io.Reader, classification string) error {
-	cli.logger.Debug("Creating manifest for Ionburst object", id)
-
-	hash, err := objectHash(reader)
+	cli.logger.Debug("Creating manifest for Ionburst object: ", id)
 
 	buf := new(bytes.Buffer)
 	buf.ReadFrom(reader)
+
+	hash, err := objectHash(reader)
 
 	fileInfo := buf.Len()
 
@@ -112,14 +112,12 @@ func (cli *Client) PutManifest(id string, reader io.Reader, classification strin
 		cli.logger.Debug("Chunk offset: ", offset)
 		buffer := make([]byte, partSize)
 
-		_, err := reader.ReaderAt(buffer, offset)
+		_, err := buf.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
 				fmt.Println(err)
 			}
-			fmt.Println("whoops")
 			fmt.Println(err)
-			break
 		}
 
 		r := bytes.NewReader(buffer)
@@ -284,6 +282,42 @@ func (cli *Client) GetSecretsToFile(id string, file string) error {
 	}
 	_, err = io.Copy(wr, rdr)
 	cli.logger.Debug("Ionburst secret download", id, " complete")
+	return err
+}
+
+func (cli *Client) GetManifest(id string) (io.Reader, error) {
+	cli.logger.Debug("Starting download of Ionburst manifest: ", id)
+
+	cli.logger.Debug("Retrieving Ionburst manifest: ", id)
+
+	manifestObject, err := cli.doGetBinary("api/data/"+id, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var manifest models.Manifest
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(manifestObject)
+
+	_ = json.Unmarshal(buf.Bytes(), &manifest)
+
+	objectBuf := new(bytes.Buffer)
+
+	for i := 0; i < len(manifest.Chunks); i++ {
+		cli.logger.Debug("Retrieving chunk: ", manifest.Chunks[i].ID)
+		chunk, err := cli.doGetBinary("api/data/"+manifest.Chunks[i].ID, nil)
+		if err != nil {
+			return nil, err
+		} else {
+			objectBuf.ReadFrom(chunk)
+		}
+		cli.logger.Debug("Retrieval of chunk: ", manifest.Chunks[i].ID, " complete")
+	}
+
+	cli.logger.Debug("Deleting manifest: ", id)
+	_, err = cli.doDelete("api/data/"+id, nil)
+
 	return err
 }
 
