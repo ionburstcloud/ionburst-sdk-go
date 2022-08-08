@@ -1,6 +1,7 @@
 package ionburst
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -8,16 +9,25 @@ import (
 )
 
 func TestManifestData(t *testing.T) {
+
+	name, ba := makeRandomPayload(75000000)
+
+	r := bytes.NewReader(ba)
+
+	w, err := os.Create("/tmp/" + name)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	_, err = io.Copy(w, r)
+
 	cli, err := NewClientPathAndProfile("", "dhcp-sucks", true)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	name := "go-sdk-manifest"
-	file := "/tmp/STScI-01G7ETPF7DVBJAC42JR5N6EQRH.png"
-
-	err = cli.PutManifestFromFile(name, file, "")
+	err = cli.PutManifestFromFile(name, "/tmp/"+name, "")
 	if err != nil {
 		t.Error(err)
 		return
@@ -67,9 +77,9 @@ func TestManifestData(t *testing.T) {
 		fmt.Println("Manifest deleted.")
 	}
 
-	rdr, _ := os.Open(file)
+	r = bytes.NewReader(ba)
 
-	err = cli.PutManifest(name, rdr, "")
+	err = cli.PutManifest(name, r, "")
 	if err != nil {
 		t.Error(err)
 		return
