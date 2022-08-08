@@ -10,7 +10,9 @@ test:
   before_script:
     - source /etc/profile
   script:
-    - go test
+    - go test -run TestClassifications
+    - go test -run TestPostData
+    - go test -run TestPostSecrets
 
 compile:
   stage: build
