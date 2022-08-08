@@ -291,6 +291,29 @@ VERSION:
 				},
 			},
 			{
+				Name:      "mdelete",
+				Usage:     "Delete a manifest object from Ionburst",
+				ArgsUsage: "<id>",
+				Action: func(c *cli.Context) error {
+					id := c.Args().Get(0)
+					if id == "" {
+						return errors.New("Please specify an id for the manifest to be deleted")
+					}
+
+					cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
+					if err != nil {
+						return err
+					}
+
+					err = cli.DeleteManifest(id)
+					if err != nil {
+						return err
+					}
+
+					return nil
+				},
+			},
+			{
 				Name:      "head",
 				Usage:     "Check an object from Ionburst",
 				ArgsUsage: "<id>",
