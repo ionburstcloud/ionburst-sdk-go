@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.2.0-develop.5
+2022-08-08
+
+### Fixes
+
+- add "mdelete" command for ioncli (d2db3fc47da19610c716c2a596eaa4f4b7acee5e)
+
 ## 1.2.0-develop.4
 2022-08-08
 
