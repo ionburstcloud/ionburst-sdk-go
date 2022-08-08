@@ -139,7 +139,7 @@ var SecretsCmd = &cli.Command{
 			Action: func(c *cli.Context) error {
 				id := c.Args().Get(0)
 				if id == "" {
-					return errors.New("Please specify an id for the object to be deleted")
+					return errors.New("Please specify an id for the object to be checked")
 				}
 
 				cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
