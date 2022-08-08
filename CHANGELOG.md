@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.2.0-develop.6
+2022-08-08
+
+### Fixes
+
+- trigger 1.2.0-develop.6 - mac ci fix (5df3aa1732a2aac70983f32af261bab4f48b55c2)
+
 ## 1.2.0-develop.5
 2022-08-08
 
