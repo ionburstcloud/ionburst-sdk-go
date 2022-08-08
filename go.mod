@@ -1,6 +1,6 @@
 module gitlab.com/ionburst/ionburst-sdk-go
 
-go 1.17
+go 1.18
 
 require (
 	github.com/go-resty/resty/v2 v2.7.0
