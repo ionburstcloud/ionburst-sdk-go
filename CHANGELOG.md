@@ -2,6 +2,13 @@
 
 <!--- next entry here -->
 
+## 1.2.0-develop.4
+2022-08-08
+
+### Fixes
+
+- comment typos (678637e6c9db2df88dbbf2ad86622aca482927bc)
+
 ## 1.2.0-develop.3
 2022-07-25
 
