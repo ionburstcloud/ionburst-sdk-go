@@ -22,6 +22,8 @@ var (
 	APIVersion string
 )
 
+const objectLimit int = 50000000
+
 func main() {
 	_ = ionburst.IonConfig{}
 	var classification string
@@ -132,6 +134,39 @@ VERSION:
 				},
 			},
 			{
+				Name:      "mget",
+				Usage:     "Download a manifest object from Ionburst",
+				ArgsUsage: "<id> <outputfile>",
+				Action: func(c *cli.Context) error {
+
+					id := c.Args().Get(0)
+					if id == "" {
+						return errors.New("Please specify an id for the object to be downloaded")
+					}
+
+					file := c.Args().Get(1)
+					if file == "" {
+						return errors.New("Please specify an object to download")
+					}
+
+					cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
+					if err != nil {
+						return err
+					}
+
+					rdr, err := cli.GetManifest(id)
+
+					wr, err := os.Create(file)
+					if err != nil {
+						return err
+					}
+
+					_, err = io.Copy(wr, rdr)
+					return err
+
+				},
+			},
+			{
 				Name:      "put",
 				Usage:     "Upload an object to Ionburst",
 				ArgsUsage: "<id> <objecttoupload>",
@@ -157,7 +192,7 @@ VERSION:
 					if file == "" {
 						return errors.New("Please specify an object to upload")
 					} else if !ionburst.FileExists(file) {
-						return errors.New(fmt.Sprintf("The specififed object doesnt exist: %s", file))
+						return errors.New(fmt.Sprintf("The specified object doesn't exist: %s", file))
 					}
 					stat, err := os.Stat(file)
 					if err != nil {
@@ -178,6 +213,57 @@ VERSION:
 					}
 
 					err = cli.Put(id, progressR, c.String("classification"))
+					return err
+				},
+			},
+			{
+				Name:      "mput",
+				Usage:     "Upload a manifest object to Ionburst",
+				ArgsUsage: "<id> <objecttoupload>",
+				Flags: []cli.Flag{
+					&cli.StringFlag{
+						Name: "classification",
+						Aliases: []string{
+							"t",
+						},
+						Value:       "",
+						Usage:       "Classification to apply to uploaded object",
+						Destination: &classification,
+					},
+				},
+				Action: func(c *cli.Context) error {
+
+					id := c.Args().Get(0)
+					if id == "" {
+						return errors.New("Please specify an id for the object to be uploaded")
+					}
+
+					file := c.Args().Get(1)
+					if file == "" {
+						return errors.New("Please specify an object to upload")
+					} else if !ionburst.FileExists(file) {
+						return errors.New(fmt.Sprintf("The specififed object doesn't exist: %s", file))
+					}
+					stat, err := os.Stat(file)
+					if err != nil {
+						return err
+					} else {
+						if stat.Size() < int64(objectLimit) {
+							return errors.New("Object too small for manifest put")
+						}
+					}
+
+					rdr, err := os.Open(file)
+					if err != nil {
+						return err
+					}
+
+					cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
+					if err != nil {
+						return err
+					}
+
+					err = cli.PutManifest(id, rdr, c.String("classification"))
 					return err
 				},
 			},
@@ -211,7 +297,7 @@ VERSION:
 				Action: func(c *cli.Context) error {
 					id := c.Args().Get(0)
 					if id == "" {
-						return errors.New("Please specify an id for the object to be deleted")
+						return errors.New("Please specify an id for the object to be checked")
 					}
 
 					cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
@@ -227,6 +313,30 @@ VERSION:
 					}
 
 					return nil
+				},
+			},
+			{
+				Name:      "manifest",
+				Usage:     "Retrieve an Ionburst object manifest",
+				ArgsUsage: "<id>",
+				Action: func(c *cli.Context) error {
+					id := c.Args().Get(0)
+					if id == "" {
+						return errors.New("Please specify a manifest id")
+					}
+
+					file := c.Args().Get(1)
+					if file == "" {
+						return errors.New("Please specify a path for the object")
+					}
+
+					cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
+					if err != nil {
+						return err
+					}
+
+					err = cli.GetToFile(id, file)
+					return err
 				},
 			},
 		},
