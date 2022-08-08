@@ -34,45 +34,45 @@ func (cli *Client) GetClassifications() ([]string, error) {
 }
 
 func (cli *Client) Put(id string, reader io.Reader, classification string) error {
-	cli.logger.Debug("Uploading Ionburst object", id)
+	cli.logger.Debug("Uploading Ionburst object: ", id)
 	_, err := cli.doPostBinary("api/data/"+id, reader, classification)
 	if err == nil {
-		cli.logger.Debug("Ionburst Upload Complete for", id)
+		cli.logger.Debug("Ionburst Upload Complete for: ", id)
 	}
 	return err
 }
 
 func (cli *Client) PutSecrets(id string, reader io.Reader, classification string) error {
-	cli.logger.Debug("Uploading Ionburst secret", id)
+	cli.logger.Debug("Uploading Ionburst secret: ", id)
 	_, err := cli.doPostBinary("api/secrets/"+id, reader, classification)
 	if err == nil {
-		cli.logger.Debug("Ionburst Put Complete for", id)
+		cli.logger.Debug("Ionburst Put Complete for: ", id)
 	}
 	return err
 }
 
 func (cli *Client) PutFromFile(id string, file string, classification string) error {
-	cli.logger.Debug("Uploading Ionburst object", id, "from file", file)
+	cli.logger.Debug("Uploading Ionburst object ", id, " from file ", file)
 	rdr, err := os.Open(file)
 	if err != nil {
 		return err
 	}
 	_, err = cli.doPostBinary("api/data/"+id, rdr, classification)
 	if err == nil {
-		cli.logger.Debug("Ionburst Upload Complete for", id)
+		cli.logger.Debug("Ionburst Upload Complete for: ", id)
 	}
 	return err
 }
 
 func (cli *Client) PutSecretsFromFile(id string, file string, classification string) error {
-	cli.logger.Debug("Uploading Ionburst secret", id, "from file", file)
+	cli.logger.Debug("Uploading Ionburst secret ", id, " from file ", file)
 	rdr, err := os.Open(file)
 	if err != nil {
 		return err
 	}
 	_, err = cli.doPostBinary("api/secrets/"+id, rdr, classification)
 	if err == nil {
-		cli.logger.Debug("Ionburst Upload Complete for", id)
+		cli.logger.Debug("Ionburst Upload Complete for: ", id)
 	}
 	return err
 }
@@ -81,7 +81,10 @@ func (cli *Client) PutManifest(id string, reader io.Reader, classification strin
 	cli.logger.Debug("Creating manifest for Ionburst object: ", id)
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(reader)
+	_, err := buf.ReadFrom(reader)
+	if err != nil {
+		return err
+	}
 
 	hash, err := objectHash(reader)
 
@@ -153,7 +156,7 @@ func (cli *Client) PutManifest(id string, reader io.Reader, classification strin
 }
 
 func (cli *Client) PutManifestFromFile(id string, file string, classification string) error {
-	cli.logger.Debug("Creating manifest for Ionburst object: ", id, "from file ", file)
+	cli.logger.Debug("Creating manifest for Ionburst object: ", id, " from file ", file)
 	rdr, err := os.Open(file)
 	if err != nil {
 		return err
@@ -236,27 +239,27 @@ func (cli *Client) PutManifestFromFile(id string, file string, classification st
 }
 
 func (cli *Client) Get(id string) (io.Reader, error) {
-	cli.logger.Debug("Downloading Ionburst object", id)
+	cli.logger.Debug("Downloading Ionburst object: ", id)
 	return cli.doGetBinary("api/data/"+id, nil)
 }
 
 func (cli *Client) GetSecrets(id string) (io.Reader, error) {
-	cli.logger.Debug("Downloading Ionburst secret", id)
+	cli.logger.Debug("Downloading Ionburst secret: ", id)
 	return cli.doGetBinary("api/secrets/"+id, nil)
 }
 
 func (cli *Client) GetWithLen(id string) (io.Reader, int64, error) {
-	cli.logger.Debug("Downloading Ionburst object", id)
+	cli.logger.Debug("Downloading Ionburst object: ", id)
 	return cli.doGetBinaryLen("api/data/"+id, nil)
 }
 
 func (cli *Client) GetSecretsWithLen(id string) (io.Reader, int64, error) {
-	cli.logger.Debug("Downloading Ionburst secret", id)
+	cli.logger.Debug("Downloading Ionburst secret: ", id)
 	return cli.doGetBinaryLen("api/secrets/"+id, nil)
 }
 
 func (cli *Client) GetToFile(id string, file string) error {
-	cli.logger.Debug("Downloading Ionburst object", id, "to file", file)
+	cli.logger.Debug("Downloading Ionburst object: ", id, " to file ", file)
 	rdr, err := cli.doGetBinary("api/data/"+id, nil)
 	if err != nil {
 		return err
@@ -266,12 +269,12 @@ func (cli *Client) GetToFile(id string, file string) error {
 		return err
 	}
 	_, err = io.Copy(wr, rdr)
-	cli.logger.Debug("Ionburst object download", id, " complete")
+	cli.logger.Debug("Ionburst object download: ", id, " complete")
 	return err
 }
 
 func (cli *Client) GetSecretsToFile(id string, file string) error {
-	cli.logger.Debug("Downloading Ionburst secret", id, "to file", file)
+	cli.logger.Debug("Downloading Ionburst secret: ", id, " to file ", file)
 	rdr, err := cli.doGetBinary("api/secrets/"+id, nil)
 	if err != nil {
 		return err
@@ -281,7 +284,7 @@ func (cli *Client) GetSecretsToFile(id string, file string) error {
 		return err
 	}
 	_, err = io.Copy(wr, rdr)
-	cli.logger.Debug("Ionburst secret download", id, " complete")
+	cli.logger.Debug("Ionburst secret download: ", id, " complete")
 	return err
 }
 
@@ -298,7 +301,10 @@ func (cli *Client) GetManifest(id string) (io.Reader, error) {
 	var manifest models.Manifest
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(manifestObject)
+	_, err = buf.ReadFrom(manifestObject)
+	if err != nil {
+		return nil, err
+	}
 
 	_ = json.Unmarshal(buf.Bytes(), &manifest)
 
@@ -310,28 +316,78 @@ func (cli *Client) GetManifest(id string) (io.Reader, error) {
 		if err != nil {
 			return nil, err
 		} else {
-			objectBuf.ReadFrom(chunk)
+			_, err := objectBuf.ReadFrom(chunk)
+			if err != nil {
+				return nil, err
+			}
 		}
 		cli.logger.Debug("Retrieval of chunk: ", manifest.Chunks[i].ID, " complete")
 	}
 
-	cli.logger.Debug("Deleting manifest: ", id)
-	_, err = cli.doDelete("api/data/"+id, nil)
+	reader := bytes.NewReader(objectBuf.Bytes())
+
+	return reader, err
+}
+
+func (cli *Client) GetManifestToFile(id string, file string) error {
+	cli.logger.Debug("Starting download of Ionburst manifest: ", id)
+
+	cli.logger.Debug("Retrieving Ionburst manifest: ", id)
+
+	manifestObject, err := cli.doGetBinary("api/data/"+id, nil)
+	if err != nil {
+		return err
+	}
+
+	var manifest models.Manifest
+
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(manifestObject)
+	if err != nil {
+		return err
+	}
+
+	_ = json.Unmarshal(buf.Bytes(), &manifest)
+
+	objectBuf := new(bytes.Buffer)
+
+	for i := 0; i < len(manifest.Chunks); i++ {
+		cli.logger.Debug("Retrieving chunk: ", manifest.Chunks[i].ID)
+		chunk, err := cli.doGetBinary("api/data/"+manifest.Chunks[i].ID, nil)
+		if err != nil {
+			return err
+		} else {
+			_, err := objectBuf.ReadFrom(chunk)
+			if err != nil {
+				return err
+			}
+		}
+		cli.logger.Debug("Retrieval of chunk: ", manifest.Chunks[i].ID, " complete")
+	}
+
+	reader := bytes.NewReader(objectBuf.Bytes())
+
+	wr, err := os.Create(file)
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(wr, reader)
+	cli.logger.Debug("Ionburst manifest download ", id, " complete")
 
 	return err
 }
 
 func (cli *Client) Delete(id string) error {
-	cli.logger.Debug("Starting Deletion of Ionburst object", id)
+	cli.logger.Debug("Starting Deletion of Ionburst object: ", id)
 	_, err := cli.doDelete("api/data/"+id, nil)
-	cli.logger.Debug("Deletion of Ionburst object", id, " complete")
+	cli.logger.Debug("Deletion of Ionburst object: ", id, " complete")
 	return err
 }
 
 func (cli *Client) DeleteSecrets(id string) error {
-	cli.logger.Debug("Starting Deletion of Ionburst secret", id)
+	cli.logger.Debug("Starting Deletion of Ionburst secret: ", id)
 	_, err := cli.doDelete("api/secrets/"+id, nil)
-	cli.logger.Debug("Deletion of Ionburst secret", id, " complete")
+	cli.logger.Debug("Deletion of Ionburst secret: ", id, " complete")
 	return err
 }
 
@@ -348,7 +404,10 @@ func (cli *Client) DeleteManifest(id string) error {
 	var manifest models.Manifest
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(manifestObject)
+	_, err = buf.ReadFrom(manifestObject)
+	if err != nil {
+		return err
+	}
 
 	_ = json.Unmarshal(buf.Bytes(), &manifest)
 
@@ -368,26 +427,26 @@ func (cli *Client) DeleteManifest(id string) error {
 }
 
 func (cli *Client) Head(id string) error {
-	cli.logger.Debug("Querying Ionburst object", id)
+	cli.logger.Debug("Querying Ionburst object: ", id)
 	_, err := cli.doHead("api/data/"+id, nil)
-	cli.logger.Debug("Query of Ionburst object", id, "complete")
+	cli.logger.Debug("Query of Ionburst object: ", id, " complete")
 	return err
 }
 
 func (cli *Client) HeadSecrets(id string) error {
-	cli.logger.Debug("Querying Ionburst secret", id)
+	cli.logger.Debug("Querying Ionburst secret: ", id)
 	_, err := cli.doHead("api/secrets/"+id, nil)
-	cli.logger.Debug("Query of Ionburst secret", id, "complete")
+	cli.logger.Debug("Query of Ionburst secret: ", id, " complete")
 	return err
 }
 
 func (cli *Client) HeadWithLen(id string) (int64, error) {
-	cli.logger.Debug("Querying Ionburst object", id)
+	cli.logger.Debug("Querying Ionburst object: ", id)
 	return cli.doHeadLen("api/data/"+id, nil)
 }
 
 func (cli *Client) HeadSecretsWithLen(id string) (int64, error) {
-	cli.logger.Debug("Querying Ionburst secret", id)
+	cli.logger.Debug("Querying Ionburst secret: ", id)
 	return cli.doHeadLen("api/secrets/"+id, nil)
 }
 
@@ -474,11 +533,11 @@ func (cli *Client) CheckDeferredSecrets(token DeferredToken) (*models.WorkflowRe
 }
 
 func (cli *Client) FetchDeferred(token DeferredToken) (io.Reader, error) {
-	cli.logger.Debug("Downloading Deferred Ionburst object with token", token)
+	cli.logger.Debug("Downloading Deferred Ionburst object with token: ", token)
 	return cli.doGetBinary("api/data/deferred/fetch/"+string(token), nil)
 }
 
 func (cli *Client) FetchDeferredSecrets(token DeferredToken) (io.Reader, error) {
-	cli.logger.Debug("Downloading Deferred Ionburst secret with token", token)
+	cli.logger.Debug("Downloading Deferred Ionburst secret with token: ", token)
 	return cli.doGetBinary("api/secrets/deferred/fetch/"+string(token), nil)
 }
