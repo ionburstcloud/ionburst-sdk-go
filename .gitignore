@@ -23,10 +23,12 @@ _testmain.go
 *.test
 *.prof
 .idea
+.vscode
 bin
 vendor
 
 .ionburst
+.vscode
 
 .tempfile
 .tempfile2

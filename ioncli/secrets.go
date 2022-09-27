@@ -132,5 +132,30 @@ var SecretsCmd = &cli.Command{
 				return nil
 			},
 		},
+		{
+			Name:      "head",
+			Usage:     "Check a secret from Ionburst",
+			ArgsUsage: "<id>",
+			Action: func(c *cli.Context) error {
+				id := c.Args().Get(0)
+				if id == "" {
+					return errors.New("Please specify an id for the object to be checked")
+				}
+
+				cli, err := ionburst.NewClientPathAndProfile(config, profile, debug)
+				if err != nil {
+					return err
+				}
+
+				size, err := cli.HeadSecretsWithLen(id)
+				if err != nil {
+					return err
+				} else {
+					fmt.Printf("Size: %d\n", size)
+				}
+
+				return nil
+			},
+		},
 	},
 }
