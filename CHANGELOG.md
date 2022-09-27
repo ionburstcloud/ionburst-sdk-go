@@ -2,6 +2,22 @@
 
 <!--- next entry here -->
 
+## 1.2.0
+2022-09-27
+
+### Features
+
+- add new HEAD method for Data and Secrets (e6e07511c327ce8d1b6ceadb1826ce0c1f6df77c)
+- add head method support to ioncli (7f6d0ec97104afa74a9a283541cfc7eb596a677d)
+
+### Fixes
+
+- add notarization to ioncli mac builds (da90d9725cee64c0bbf774821ee3b349afd88020)
+- version/release fix for ci (0d155055479de7ede5983136bb6e2ba9764b3ac3)
+- comment typos (678637e6c9db2df88dbbf2ad86622aca482927bc)
+- add "mdelete" command for ioncli (d2db3fc47da19610c716c2a596eaa4f4b7acee5e)
+- trigger 1.2.0-develop.6 - mac ci fix (5df3aa1732a2aac70983f32af261bab4f48b55c2)
+
 ## 1.2.0-develop.6
 2022-08-08
 
