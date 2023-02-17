@@ -10,6 +10,7 @@ import (
 	"log"
 	"math"
 	"os"
+	"strconv"
 
 	"github.com/google/uuid"
 	"gitlab.com/ionburst/ionburst-sdk-go/models"
@@ -30,6 +31,32 @@ func (cli *Client) GetClassifications() ([]string, error) {
 		}
 		cli.logger.Debug("Retrieved Classifications")
 		return classifications, nil
+	}
+}
+
+func (cli *Client) GetDataUploadLimit() (int, error) {
+	cli.logger.Debug("Getting Data Upload Limit")
+	if res, err := cli.doGet("api/data/query/uploadsizelimit", nil); err != nil {
+		return 0, err
+	} else {
+		var datalimitbody []byte = res.Body()
+		var datauploadlimit, _ = strconv.Atoi(string(datalimitbody))
+
+		cli.logger.Debug("Retrieved Data Upload Limit")
+		return datauploadlimit, nil
+	}
+}
+
+func (cli *Client) GetSecretsUploadLimit() (int, error) {
+	cli.logger.Debug("Getting Secrets Upload Limit")
+	if res, err := cli.doGet("api/secrets/query/uploadsizelimit", nil); err != nil {
+		return 0, err
+	} else {
+		var secretslimitbody []byte = res.Body()
+		var secretsuploadlimit, _ = strconv.Atoi(string(secretslimitbody))
+
+		cli.logger.Debug("Retrieved Secrets Upload Limit")
+		return secretsuploadlimit, nil
 	}
 }
 
