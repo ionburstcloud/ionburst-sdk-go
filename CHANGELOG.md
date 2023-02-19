@@ -2,6 +2,15 @@
 
 <!--- next entry here -->
 
+## 1.2.1-develop.1
+2023-02-19
+
+### Fixes
+
+- dependency bump (7e743b9349f14ba9db70c49eae683f1eb5eeaa34)
+- add functions to retrieve api upload limits (4d994a17fdb7dd7b3d3945ece6d028461fd9fca4)
+- add initial limits command to ioncli (66a432fce8f5923bb35e78072aa7aca557781f0a)
+
 ## 1.2.0
 2022-09-27
 
