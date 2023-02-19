@@ -73,19 +73,9 @@ compile_mac:
   script:
     - cd ioncli
     - GOOS=darwin GOARCH=amd64 go build -o ../bin/ioncli -ldflags="-X=main.Version=$RELEASE_VERSION -X=main.Build=$BUILD -X=main.APIVersion=$RELEASE_VERSION"
-    - cd ../bin
-    - gon --log-level info .gon.hcl
-    - rm -f ./ioncli
-    - unzip ioncli.zip
-    - ls -lah
-    - spctl -a -vv -t install ioncli
-    - zip ioncli-$RELEASE_VERSION-darwin-amd64.zip ioncli build_info
     - tar cvfj ioncli-$RELEASE_VERSION-darwin64.tar.bz2 ioncli build_info
-    - 'minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin-amd64.zip -t "ioncli $RELEASE_VERSION" < min_pass'
     - 'minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass'
-    - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_path=scw-fr-par/ioncli/develop/; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_path=scw-fr-par/ioncli/; echo $ioncli_path; fi;
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-amd64.zip $ioncli_path
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-amd64.zip.minisig $ioncli_path
+    - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_path=scw-fr-par/ioncli/mac-temp/develop/; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_path=scw-fr-par/ioncli/mac-temp/; echo $ioncli_path; fi;
     - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2 $ioncli_path
     - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin64.tar.bz2.minisig $ioncli_path
     - mc ls $ioncli_path
@@ -117,19 +107,9 @@ compile_mac_arm64:
   script:
     - cd ioncli
     - GOOS=darwin GOARCH=arm64 go build -o ../bin/ioncli -ldflags="-X=main.Version=$RELEASE_VERSION -X=main.Build=$BUILD -X=main.APIVersion=$RELEASE_VERSION"
-    - cd ../bin
-    - gon --log-level info .gon.hcl
-    - rm -f ./ioncli
-    - unzip ioncli.zip
-    - ls -lah
-    - spctl -a -vv -t install ioncli
-    - zip ioncli-$RELEASE_VERSION-darwin-arm64.zip ioncli build_info
     - tar cvfj ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2 ioncli build_info
-    - 'minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin-arm64.zip -t "ioncli $RELEASE_VERSION" < min_pass'
     - 'minisign -s minisign.key -Sm ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2 -t "ioncli $RELEASE_VERSION" < min_pass'
-    - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_path=scw-fr-par/ioncli/develop/; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_path=scw-fr-par/ioncli/; echo $ioncli_path; fi;
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.zip $ioncli_path
-    - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.zip.minisig $ioncli_path
+    - if [ $CI_COMMIT_REF_NAME = develop ]; then ioncli_path=scw-fr-par/ioncli/mac-temp/develop/; echo $ioncli_path; elif [ $CI_COMMIT_REF_NAME = main ]; then ioncli_path=scw-fr-par/ioncli/mac-temp/; echo $ioncli_path; fi;
     - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2 $ioncli_path
     - mc cp --attr x-amz-acl=public-read ioncli-$RELEASE_VERSION-darwin-arm64.tar.bz2.minisig $ioncli_path
     - mc ls $ioncli_path
